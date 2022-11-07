@@ -15,18 +15,16 @@ classifiers = [
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Topic :: Software Development :: Quality Assurance',
     'Programming Language :: Python',
-    'Programming Language :: Python :: 3.6',
-    'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.7"
-flake8 = "*"
+python = ">=3.8"
+flake8 = ">=4.0.0"
 pycodestyle = "*"
-typing-extensions = "*"
 
 [tool.poetry.dev-dependencies]
 black = "22.6.0"
