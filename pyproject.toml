@@ -29,8 +29,9 @@ typing-extensions = "*"
 
 [tool.poetry.dev-dependencies]
 black = "22.6.0"
-pytest = ">=7.0.0,<8.0.0"
 pre-commit = ">=2.10.0,<3.0"
+pytest = ">=7.0.0,<8.0.0"
+pytest-cov = ">=2.6.0,<3.0.0"
 
 [tool.poetry.plugins."flake8.extension"]
 BBS = "flake8_bbs:StatementChecker"

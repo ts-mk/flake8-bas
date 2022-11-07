@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ['3.9']
+        python: ['3.8', '3.9']
         flake8: ['5.0.0']
     steps:
       - name: Dump workflow context
