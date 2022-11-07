@@ -9,7 +9,7 @@ if 1 == 1:
     pass
 
 """
-Multiline comment before statement
+Multiline comment before statement is ok
 """
 if 1 == 1:
     pass
@@ -43,7 +43,7 @@ else:
         pass
 
 
-def b():
+def test():
     if 1 == 1:
         pass
 

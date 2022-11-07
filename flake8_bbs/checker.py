@@ -5,18 +5,8 @@ from collections import namedtuple
 from typing import Generator, List, Optional
 
 import pkg_resources
-
-try:
-    from flake8.engine import pep8
-
-    stdin_get_value = pep8.stdin_get_value
-    readlines = pep8.readlines
-except ImportError:
-    from flake8 import utils
-    import pycodestyle
-
-    stdin_get_value = utils.stdin_get_value
-    readlines = pycodestyle.readlines
+from flake8.utils import stdin_get_value
+from pycodestyle import readlines
 
 Statement = namedtuple("Statement", ["keyword", "cls", "error_code"])
 Error = namedtuple("Error", ["lineno", "col_offset", "message", "type"])
@@ -59,10 +49,15 @@ class StatementChecker:
     version = pkg_resources.get_distribution(name).version
     options = None
 
-    def __init__(self, tree: ast.Module, filename: str, lines: List[str]) -> None:
+    def __init__(
+        self,
+        filename: str,
+        tree: Optional[ast.Module] = None,
+        lines: Optional[List[str]] = None,
+    ) -> None:
         """
-        :param tree: parsed abstract syntax tree of a module
         :param filename: filename of the module
+        :param tree: parsed abstract syntax tree of a module
         :param lines: module's lines of code
         """
         self.tree = tree
