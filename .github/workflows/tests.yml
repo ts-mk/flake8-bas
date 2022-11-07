@@ -95,7 +95,7 @@ jobs:
       - name: Package installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
         run: |
-          poetry install --no-root --remove-untracked
+          poetry install --remove-untracked
           poetry add "flake8==${{ matrix.flake8 }}"
 
       - name: Run
