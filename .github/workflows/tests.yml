@@ -52,7 +52,7 @@ jobs:
       - name: Python setup
         uses: actions/setup-python@v4
         with:
-          python-version: $${{ matrix.python }}
+          python-version: ${{ matrix.python }}
 
       - name: Setup of a local directory
         run: mkdir ./.local && touch ./.local/result_cache
