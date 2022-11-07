@@ -42,7 +42,7 @@ def error_compiler() -> Callable:
     return _
 
 
-@pytest.fixture(params=(Path(__file__).parent / "files/valid").glob("*.py"))
+@pytest.fixture(params=(Path(__file__).parent / "fixtures/valid").glob("*.py"))
 def valid(request) -> CheckerTester:
     content = request.param.read_text()
 
@@ -58,7 +58,7 @@ def valid(request) -> CheckerTester:
     )
 
 
-@pytest.fixture(params=(Path(__file__).parent / "files/invalid").glob("*.py"))
+@pytest.fixture(params=(Path(__file__).parent / "fixtures/invalid").glob("*.py"))
 def invalid(request) -> CheckerTester:
     content = request.param.read_text()
 
