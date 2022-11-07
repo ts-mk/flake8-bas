@@ -60,12 +60,10 @@ class StatementChecker:
         :param tree: parsed abstract syntax tree of a module
         :param lines: module's lines of code
         """
+        self.statement_map = {s.cls: s for s in self.STATEMENTS}
         self.tree = tree
         self.filename = filename
         self.lines = lines
-        self.statement_map = {s.cls: s for s in self.STATEMENTS}
-
-        self._set_content()
 
     @classmethod
     def parse_options(cls, options: argparse.Namespace) -> None:
@@ -170,6 +168,7 @@ class StatementChecker:
         :return: error generator
         """
         previous_node = None
+        self._set_content()
 
         for node in ast.walk(self.tree):
             self._prepare_node(node=node, previous_node=previous_node)
