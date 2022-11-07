@@ -1,8 +1,8 @@
 # Flake8 - check for blank lines before statements
 
-![Python](https://img.shields.io/badge/Python-3.7+-blue?logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)
 ![License](https://img.shields.io/badge/License-proprietary-blue)
-![Coverage](https://img.shields.io/badge/Coverage-92%25-brightgreen?logo=pytest&logoColor=white)
+![Coverage](https://img.shields.io/badge/Coverage-90%25-brightgreen?logo=pytest&logoColor=white)
 ![CI](https://github.com/ts-mk/flake8-bbs/actions/workflows/tests.yml/badge.svg)
 
 ## Introduction

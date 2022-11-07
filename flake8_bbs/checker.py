@@ -5,7 +5,6 @@ from collections import namedtuple
 from typing import Generator, List, Optional
 
 import pkg_resources
-from flake8.options.manager import OptionManager
 
 try:
     from flake8.engine import pep8
@@ -24,10 +23,12 @@ Error = namedtuple("Error", ["lineno", "col_offset", "message", "type"])
 
 
 class StatementChecker:
+    """
+    Checks for blank lines before statements.
+    """
+
     BLANK_LINE_RE = re.compile(r"^\s*\n")
-    # COMMENT_LINE_RE = re.compile(r"^\s*#")
     ERROR_NAMESPACE = "BBS"
-    # DEFAULT_EXCLUDE = ("class", "def", "return")
     STATEMENTS = (
         Statement("assert", ast.Assert, f"{ERROR_NAMESPACE}001"),
         Statement("async for", ast.AsyncFor, f"{ERROR_NAMESPACE}002"),
@@ -67,40 +68,23 @@ class StatementChecker:
         self.tree = tree
         self.filename = filename
         self.lines = lines
-
-        # self.comment_lines = [
-        #     lineno
-        #     for lineno, line in enumerate(lines, start=1)
-        #     if self.COMMENT_LINE_RE.match(line)
-        # ]
         self.statement_map = {s.cls: s for s in self.STATEMENTS}
 
         self._set_content()
 
-    # @classmethod
-    # def add_options(cls, manager: OptionManager) -> None:
-    #     manager.add_option(
-    #         "--exclude-statements",
-    #         metavar="statements",
-    #         default="",
-    #         parse_from_config=True,
-    #         comma_separated_list=True,
-    #         help="Comma-separated list of statements to be ignored by the plugin",
-    #     )
-    #     manager.add_option(
-    #         "--include-statements",
-    #         metavar="statements",
-    #         default="",
-    #         parse_from_config=True,
-    #         comma_separated_list=True,
-    #         help="Comma-separated list of statements to be checked by the plugin",
-    #     )
-
     @classmethod
     def parse_options(cls, options: argparse.Namespace) -> None:
+        """
+        Sets Flake8 options.
+
+        :param options: list of options
+        """
         cls.options = options
 
-    def _set_content(self):
+    def _set_content(self) -> None:
+        """
+        Sets the content (lines, tree) based on the current state.
+        """
         if self.filename in ("stdin", "-", None):
             self.filename = "stdin"
             self.lines = stdin_get_value().splitlines(True)
@@ -117,6 +101,12 @@ class StatementChecker:
         ]
 
     def _node_invalid(self, node: ast.AST) -> bool:
+        """
+        Checks whether the node is valid or not.
+
+        :param node: AST node
+        :return: True if the node passes the checks, otherwise False
+        """
         previous_node = getattr(node, "previous_node", None)
 
         if not isinstance(node, tuple(self.statement_map.keys())):
@@ -129,8 +119,8 @@ class StatementChecker:
             previous_node
             and getattr(previous_node, "end_lineno", None)
             and any(
-                l in self.blank_lines
-                for l in range(previous_node.end_lineno, node.lineno)
+                line in self.blank_lines
+                for line in range(previous_node.end_lineno, node.lineno)
             )
         ):
             return False
@@ -166,6 +156,12 @@ class StatementChecker:
     def _prepare_node(
         self, node: ast.AST, previous_node: Optional[ast.AST] = None
     ) -> None:
+        """
+        Prepares the  node for further use.
+
+        :param node: AST node
+        :param previous_node: previously found node
+        """
         node.previous_node = previous_node
 
         for child in ast.iter_child_nodes(node):
