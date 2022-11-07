@@ -23,6 +23,11 @@ if a == 2:
 
 The plugin therefore checks for a blank line before each statement as long as it's **not a first line of code within a module** and **not a first statement within another statement**.
 
+## Requirements
+
+* Python >= 3.8
+* flake8 >= 4.0.0
+
 ## List of statements and their error codes
 
 * `assert`: BBS001
