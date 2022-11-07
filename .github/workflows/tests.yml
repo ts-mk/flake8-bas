@@ -33,7 +33,7 @@ jobs:
         with:
           path: ./.local/result_cache
           key: >-
-            pre-commit-$${{ matrix.python }}-$${{ matrix.flake8 }}-result-${{ github.job }}-${{ github.ref }}-${{
+            pre-commit-result-$${{ matrix.python }}-$${{ matrix.flake8 }}-${{ github.job }}-${{ github.ref }}-${{
               hashFiles(
                 format('.github/workflows/{0}', env.SELF),
                 format('{0}/**.py', env.PACKAGE_NAME),
@@ -68,7 +68,7 @@ jobs:
         with:
           path: ./.local/result_cache
           key: >-
-            unit-$${{ matrix.python }}-$${{ matrix.flake8 }}-result-${{ github.job }}-${{ github.ref }}-${{
+            unit-result-$${{ matrix.python }}-$${{ matrix.flake8 }}--${{ github.job }}-${{ github.ref }}-${{
               hashFiles(
                 format('.github/workflows/{0}', env.SELF),
                 format('{0}/**.py', env.PACKAGE_NAME),
@@ -92,9 +92,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+          key: unit-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-${{ hashFiles('poetry.lock') }}
           restore-keys: |
-            ${{ runner.os }}-poetry-
+            unit-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-
 
       - name: Poetry installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
@@ -137,7 +137,7 @@ jobs:
         with:
           path: ./.local/result_cache
           key: >-
-            compatibility-$${{ matrix.python }}-$${{ matrix.flake8 }}-result-${{ github.job }}-${{ github.ref }}-${{
+            compat-result-$${{ matrix.python }}-$${{ matrix.flake8 }}--${{ github.job }}-${{ github.ref }}-${{
               hashFiles(
                 format('.github/workflows/{0}', env.SELF),
                 format('{0}/**.py', env.PACKAGE_NAME),
@@ -161,9 +161,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+          key: compat-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-${{ hashFiles('poetry.lock') }}
           restore-keys: |
-            ${{ runner.os }}-poetry-
+            compat-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-
 
       - name: Poetry installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
