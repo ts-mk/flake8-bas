@@ -1,0 +1,58 @@
+[tool.poetry]
+name = "flake8-bbs"
+version = "0.1.0.alpha.1"
+description = "A flake8 extension that checks blank lines before statements"
+authors = ["Tomas Mrozek <tm@nohup.run>"]
+maintainers = ["Tomas Mrozek <tm@nohup.run>"]
+repository = ""
+documentation = ""
+license = "MIT"
+classifiers = [
+    'Environment :: Console',
+    'Framework :: Flake8',
+    'Operating System :: OS Independent',
+    'Topic :: Software Development :: Documentation',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Topic :: Software Development :: Quality Assurance',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+]
+
+[tool.poetry.dependencies]
+python = ">=3.7"
+flake8 = "*"
+pycodestyle = "*"
+typing-extensions = "*"
+
+[tool.poetry.dev-dependencies]
+black = "22.6.0"
+pytest = ">=7.0.0,<8.0.0"
+pre-commit = ">=2.10.0,<3.0"
+
+[tool.poetry.plugins."flake8.extension"]
+BBS = "flake8_bbs:StatementChecker"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+skip-numeric-underscore-normalization = true
+
+[tool.interrogate]
+color = true
+exclude = ["tests", ".local"]
+fail-under = 100
+ignore-init-method = true
+ignore-init-module = true
+ignore-magic = true
+ignore-module = true
+ignore-nested-functions = true
+ignore-private = false
+ignore-property-decorators = true
+ignore-semiprivate = false
+quiet = false
+verbose = 2
