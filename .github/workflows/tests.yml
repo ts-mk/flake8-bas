@@ -1,0 +1,182 @@
+name: Quality checks
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+      - ready_for_review
+      - synchronize
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  COVERAGE_RESULT: ./.local/coverage.xml
+  POETRY_VERSION: '1.1.13'
+  PYTHON_VERSION: '3.9'
+  PACKAGE_NAME: 'flake8_bbs'
+  SELF: tests.yml
+
+jobs:
+  pre-commit:
+    name: Pre-commit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Result cache
+        id: result-cache
+        uses: actions/cache@v3
+        with:
+          path: ./.local/result_cache
+          key: >-
+            pre-commit-result-$${{ matrix.python }}-$${{ matrix.flake8 }}-${{ github.job }}-${{ github.ref }}-${{
+              hashFiles(
+                format('.github/workflows/{0}', env.SELF),
+                format('{0}/**.py', env.PACKAGE_NAME),
+                'tests/**',
+                'poetry.lock'
+              )
+            }}
+
+      - name: Python setup
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Run
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        uses: pre-commit/action@v3.0.0
+
+  tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump workflow context
+        uses: crazy-max/ghaction-dump-context@v1
+
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Result cache
+        id: result-cache
+        uses: actions/cache@v3
+        with:
+          path: ./.local/result_cache
+          key: >-
+            unit-result-$${{ matrix.python }}-$${{ matrix.flake8 }}--${{ github.job }}-${{ github.ref }}-${{
+              hashFiles(
+                format('.github/workflows/{0}', env.SELF),
+                format('{0}/**.py', env.PACKAGE_NAME),
+                'tests/**',
+                'poetry.lock'
+              )
+            }}
+
+      - name: Python setup
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Setup of a local directory
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        run: mkdir ./.local && touch ./.local/result_cache
+
+      - name: Virtualenvs cache
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: unit-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            unit-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-
+
+      - name: Poetry installation
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: ${{ env.POETRY_VERSION }}
+
+      - name: Package installation
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        run: poetry install --remove-untracked
+
+      - name: Run
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        run: >-
+          poetry run pytest
+          --tb=short
+          --cov=${{ env.PACKAGE_NAME }}
+          --cov-report=xml:${{ env.COVERAGE_RESULT }}
+          --cov-report=term
+          ./tests/
+
+  compatibility:
+    name: Compatibility tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.8', '3.9', '3.10', '3.11']
+        flake8: ['4.0.0', '5.0.0']
+    steps:
+      - name: Dump workflow context
+        uses: crazy-max/ghaction-dump-context@v1
+
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Result cache
+        id: result-cache
+        uses: actions/cache@v3
+        with:
+          path: ./.local/result_cache
+          key: >-
+            compat-result-$${{ matrix.python }}-$${{ matrix.flake8 }}--${{ github.job }}-${{ github.ref }}-${{
+              hashFiles(
+                format('.github/workflows/{0}', env.SELF),
+                format('{0}/**.py', env.PACKAGE_NAME),
+                'tests/**',
+                'poetry.lock'
+              )
+            }}
+
+      - name: Python setup
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Setup of a local directory
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        run: mkdir ./.local && touch ./.local/result_cache
+
+      - name: Virtualenvs cache
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: compat-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            compat-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-
+
+      - name: Poetry installation
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: ${{ env.POETRY_VERSION }}
+
+      - name: Package installation
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        run: |
+          poetry install --no-dev --remove-untracked
+          poetry add "flake8==${{ matrix.flake8 }}"
+
+      - name: Run
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        run: poetry run flake8 ./tests/fixtures/valid
