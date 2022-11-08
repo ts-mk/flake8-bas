@@ -1,4 +1,6 @@
-from flake8_bbs import StatementChecker
+import re
+
+from flake8_bbs.checker import STATEMENTS
 
 
 def test_valid_statements(valid, error_formatter):
@@ -15,10 +17,16 @@ def test_invalid_statements(invalid, error_formatter):
     ), f"{invalid.file.name}: {invalid.error_count} errors expected"
 
     for item in result:
-        assert item.message.startswith(f"{invalid.error_code} ")
+        error_codes = "|".join(invalid.error_codes)
+        assert re.match(f"({error_codes}) ", item.message)
 
 
 def test_error_code_uniqueness():
-    assert len(set(s.error_code for s in StatementChecker.STATEMENTS)) == len(
-        StatementChecker.STATEMENTS
-    )
+    assert (
+        len(
+            set(
+                [s.error_code for s in STATEMENTS]
+                + [s.sibling_error_code for s in STATEMENTS]
+            )
+        )
+    ) == len(STATEMENTS) * 2

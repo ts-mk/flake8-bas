@@ -1,5 +1,6 @@
 import ast
 import re
+import sys
 from collections import namedtuple
 from pathlib import Path
 from typing import Callable
@@ -7,16 +8,33 @@ from typing import Callable
 import pytest
 from _pytest.fixtures import SubRequest
 
-from flake8_bbs import StatementChecker
+from flake8_bbs.checker import StatementChecker, STATEMENTS
 
 CheckerTester = namedtuple(
-    "CheckerTester", ["file", "checker", "error_code", "error_count"]
+    "CheckerTester", ["file", "checker", "error_codes", "error_count"]
 )
 
 FILE_FORMAT = re.compile(r"([a-z\s]+)\-?(\d*)")
+TEST_ROOT = Path(__file__).parent
 
 
-def error_from_file(file: Path) -> str:
+def load_files(subdirectory: str) -> list[Path]:
+    output = []
+
+    for file in (TEST_ROOT / f"fixtures/{subdirectory}").rglob("*.py"):
+        match = FILE_FORMAT.match(file.stem)
+
+        for statement in STATEMENTS:
+            if (
+                match.groups()[0] == statement.keyword
+                and sys.version_info >= statement.python_compatibility
+            ):
+                output.append(file)
+
+    return output
+
+
+def errors_from_file(file: Path) -> tuple:
     """
     Resolves the packages Flake8 error code based on the file's name.
 
@@ -26,9 +44,9 @@ def error_from_file(file: Path) -> str:
     try:
         match = FILE_FORMAT.match(file.stem)
 
-        for statement in StatementChecker.STATEMENTS:
+        for statement in STATEMENTS:
             if match.groups()[0] == statement.keyword:
-                return statement.error_code
+                return (statement.error_code, statement.sibling_error_code)
         else:
             raise Exception
     except Exception as e:
@@ -61,7 +79,7 @@ def error_formatter() -> Callable:
     return _
 
 
-@pytest.fixture(params=(Path(__file__).parent / "fixtures/valid").glob("*.py"))
+@pytest.fixture(params=load_files("valid"))
 def valid(request: SubRequest) -> CheckerTester:
     """
     Returns StatementChecker context for one of the valid fixture files.
@@ -78,12 +96,12 @@ def valid(request: SubRequest) -> CheckerTester:
             tree=ast.parse(content),
             lines=[f"{line}\n" for line in content.split("\n")],
         ),
-        error_from_file(request.param),
+        errors_from_file(request.param),
         0,
     )
 
 
-@pytest.fixture(params=(Path(__file__).parent / "fixtures/invalid").glob("*.py"))
+@pytest.fixture(params=load_files("invalid"))
 def invalid(request: SubRequest) -> CheckerTester:
     """
     Returns StatementChecker context for one of the invalid fixture files.
@@ -100,6 +118,6 @@ def invalid(request: SubRequest) -> CheckerTester:
             tree=ast.parse(content),
             lines=[f"{line}\n" for line in content.split("\n")],
         ),
-        error_from_file(request.param),
+        errors_from_file(request.param),
         error_count_from_file(request.param),
     )

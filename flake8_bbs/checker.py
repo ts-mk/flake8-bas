@@ -6,8 +6,187 @@ from typing import Generator, List, Optional
 
 import pkg_resources
 
-Statement = namedtuple("Statement", ["keyword", "cls", "error_code"])
+Statement = namedtuple(
+    "Statement",
+    ["keyword", "cls", "error_code", "sibling_error_code", "python_compatibility"],
+)
 Error = namedtuple("Error", ["lineno", "col_offset", "message", "type"])
+
+ERROR_NAMESPACE = "BBS"
+SIMPLE_STATEMENTS = (
+    Statement(
+        "assert",
+        ast.Assert,
+        f"{ERROR_NAMESPACE}101",
+        f"{ERROR_NAMESPACE}201",
+        (3, 5),
+    ),
+    Statement(
+        "break",
+        ast.Break,
+        f"{ERROR_NAMESPACE}102",
+        f"{ERROR_NAMESPACE}202",
+        (3, 5),
+    ),
+    Statement(
+        "continue",
+        ast.Continue,
+        f"{ERROR_NAMESPACE}103",
+        f"{ERROR_NAMESPACE}203",
+        (3, 5),
+    ),
+    Statement(
+        "del",
+        ast.Delete,
+        f"{ERROR_NAMESPACE}104",
+        f"{ERROR_NAMESPACE}204",
+        (3, 5),
+    ),
+    Statement(
+        "global",
+        ast.Global,
+        f"{ERROR_NAMESPACE}105",
+        f"{ERROR_NAMESPACE}205",
+        (3, 5),
+    ),
+    Statement(
+        "import",
+        ast.Import,
+        f"{ERROR_NAMESPACE}106",
+        f"{ERROR_NAMESPACE}206",
+        (3, 5),
+    ),
+    Statement(
+        "import from",
+        ast.ImportFrom,
+        f"{ERROR_NAMESPACE}107",
+        f"{ERROR_NAMESPACE}207",
+        (3, 5),
+    ),
+    Statement(
+        "nonlocal",
+        ast.Nonlocal,
+        f"{ERROR_NAMESPACE}108",
+        f"{ERROR_NAMESPACE}208",
+        (3, 5),
+    ),
+    Statement(
+        "pass",
+        ast.Pass,
+        f"{ERROR_NAMESPACE}109",
+        f"{ERROR_NAMESPACE}209",
+        (3, 5),
+    ),
+    Statement(
+        "raise",
+        ast.Raise,
+        f"{ERROR_NAMESPACE}110",
+        f"{ERROR_NAMESPACE}210",
+        (3, 5),
+    ),
+    Statement(
+        "return",
+        ast.Return,
+        f"{ERROR_NAMESPACE}111",
+        f"{ERROR_NAMESPACE}211",
+        (3, 5),
+    ),
+    Statement(
+        "yield",
+        ast.Yield,
+        f"{ERROR_NAMESPACE}112",
+        f"{ERROR_NAMESPACE}212",
+        (3, 5),
+    ),
+    Statement(
+        "yield from",
+        ast.YieldFrom,
+        f"{ERROR_NAMESPACE}113",
+        f"{ERROR_NAMESPACE}213",
+        (3, 5),
+    ),
+)
+COMPOUND_STATEMENTS = (
+    Statement(
+        "async def",
+        ast.AsyncFunctionDef,
+        f"{ERROR_NAMESPACE}301",
+        f"{ERROR_NAMESPACE}401",
+        (3, 5),
+    ),
+    Statement(
+        "async for",
+        ast.AsyncFor,
+        f"{ERROR_NAMESPACE}302",
+        f"{ERROR_NAMESPACE}402",
+        (3, 5),
+    ),
+    Statement(
+        "async with",
+        ast.AsyncWith,
+        f"{ERROR_NAMESPACE}303",
+        f"{ERROR_NAMESPACE}403",
+        (3, 5),
+    ),
+    Statement(
+        "class",
+        ast.ClassDef,
+        f"{ERROR_NAMESPACE}304",
+        f"{ERROR_NAMESPACE}404",
+        (3, 5),
+    ),
+    Statement(
+        "def",
+        ast.FunctionDef,
+        f"{ERROR_NAMESPACE}305",
+        f"{ERROR_NAMESPACE}405",
+        (3, 5),
+    ),
+    Statement(
+        "for",
+        ast.For,
+        f"{ERROR_NAMESPACE}306",
+        f"{ERROR_NAMESPACE}406",
+        (3, 5),
+    ),
+    Statement(
+        "if",
+        ast.If,
+        f"{ERROR_NAMESPACE}307",
+        f"{ERROR_NAMESPACE}407",
+        (3, 5),
+    ),
+    Statement(
+        "match",
+        getattr(ast, "Match", None),
+        f"{ERROR_NAMESPACE}308",
+        f"{ERROR_NAMESPACE}408",
+        (3, 10),
+    ),
+    Statement(
+        "try",
+        ast.Try,
+        f"{ERROR_NAMESPACE}309",
+        f"{ERROR_NAMESPACE}409",
+        (3, 5),
+    ),
+    Statement(
+        "while",
+        ast.While,
+        f"{ERROR_NAMESPACE}310",
+        f"{ERROR_NAMESPACE}410",
+        (3, 5),
+    ),
+    Statement(
+        "with",
+        ast.With,
+        f"{ERROR_NAMESPACE}311",
+        f"{ERROR_NAMESPACE}411",
+        (3, 5),
+    ),
+)
+
+STATEMENTS = SIMPLE_STATEMENTS + COMPOUND_STATEMENTS
 
 
 class StatementChecker:
@@ -16,32 +195,6 @@ class StatementChecker:
     """
 
     BLANK_LINE_RE = re.compile(r"^\s*\n")
-    ERROR_NAMESPACE = "BBS"
-    STATEMENTS = (
-        Statement("assert", ast.Assert, f"{ERROR_NAMESPACE}010"),
-        Statement("async for", ast.AsyncFor, f"{ERROR_NAMESPACE}020"),
-        Statement("async def", ast.AsyncFunctionDef, f"{ERROR_NAMESPACE}030"),
-        Statement("async with", ast.AsyncWith, f"{ERROR_NAMESPACE}040"),
-        Statement("break", ast.Break, f"{ERROR_NAMESPACE}050"),
-        Statement("class", ast.ClassDef, f"{ERROR_NAMESPACE}060"),
-        Statement("continue", ast.Continue, f"{ERROR_NAMESPACE}070"),
-        Statement("del", ast.Delete, f"{ERROR_NAMESPACE}080"),
-        Statement("for", ast.For, f"{ERROR_NAMESPACE}090"),
-        Statement("def", ast.FunctionDef, f"{ERROR_NAMESPACE}100"),
-        Statement("global", ast.Global, f"{ERROR_NAMESPACE}110"),
-        Statement("if", ast.If, f"{ERROR_NAMESPACE}120"),
-        Statement("import", ast.Import, f"{ERROR_NAMESPACE}130"),
-        Statement("import from", ast.ImportFrom, f"{ERROR_NAMESPACE}140"),
-        Statement("nonlocal", ast.Nonlocal, f"{ERROR_NAMESPACE}150"),
-        Statement("pass", ast.Pass, f"{ERROR_NAMESPACE}160"),
-        Statement("raise", ast.Raise, f"{ERROR_NAMESPACE}170"),
-        Statement("return", ast.Return, f"{ERROR_NAMESPACE}180"),
-        Statement("try", ast.Try, f"{ERROR_NAMESPACE}190"),
-        Statement("while", ast.While, f"{ERROR_NAMESPACE}200"),
-        Statement("with", ast.With, f"{ERROR_NAMESPACE}210"),
-        Statement("yield", ast.Yield, f"{ERROR_NAMESPACE}220"),
-        Statement("yield from", ast.YieldFrom, f"{ERROR_NAMESPACE}230"),
-    )
 
     name = "flake8-bbs"
     version = pkg_resources.get_distribution(name).version
@@ -58,7 +211,7 @@ class StatementChecker:
         :param tree: parsed abstract syntax tree of a module
         :param lines: module's lines of code
         """
-        self.statement_map = {s.cls: s for s in self.STATEMENTS}
+        self.statement_map = {s.cls: s for s in STATEMENTS if s.cls}
         self.tree = tree
         self.filename = filename
         self.blank_lines = [
@@ -76,20 +229,20 @@ class StatementChecker:
         """
         cls.options = options
 
-    def _node_invalid(self, node: ast.AST) -> bool:
+    def _node_invalid(self, node: ast.AST) -> Optional[str]:
         """
         Checks whether the node is valid or not.
 
         :param node: AST node
-        :return: True if the node passes the checks, otherwise False
+        :return: error code
         """
         previous_node = getattr(node, "previous_node", None)
 
         if not isinstance(node, tuple(self.statement_map.keys())):
-            return False
+            return
 
         if node.lineno == 1:
-            return False
+            return
 
         if (
             previous_node
@@ -99,15 +252,19 @@ class StatementChecker:
                 for line in range(previous_node.end_lineno, node.lineno)
             )
         ):
-            return False
+            return
 
         if self._is_first_child(node):
-            return False
+            return
 
         if previous_node and isinstance(previous_node, ast.Expr):
-            return False
+            return
 
-        return True
+        # All valida conditions exhausted so return an error
+        if previous_node and isinstance(node, previous_node.__class__):
+            return self.statement_map[node.__class__].sibling_error_code
+        else:
+            return self.statement_map[node.__class__].error_code
 
     def _is_first_child(self, node: ast.AST) -> bool:
         """
@@ -116,9 +273,7 @@ class StatementChecker:
         :param node: AST node
         :return: True if it is, otherwise False
         """
-        parent_node = getattr(node, "parent_node", None)
-
-        if not parent_node:
+        if not (parent_node := getattr(node, "parent_node", None)):
             return False
 
         if len(getattr(parent_node, "body", [])) and parent_node.body[0] is node:
@@ -155,12 +310,11 @@ class StatementChecker:
         for node in ast.walk(self.tree):
             self._prepare_node(node=node, previous_node=previous_node)
 
-            if self._node_invalid(node=node):
+            if error_code := self._node_invalid(node=node):
                 yield Error(
                     node.lineno,
                     node.col_offset,
-                    f"{self.statement_map[node.__class__].error_code} "
-                    f"missing blank line before "
+                    f"{error_code} missing blank line before "
                     f'"{self.statement_map[node.__class__].keyword}" statement',
                     type(self),
                 )

@@ -28,6 +28,16 @@ else:
 b = 1
 a = 1 if b == 2 else 0
 
+
+class Test:
+    if 1 == 1:
+        pass
+
+    def test(self):
+        if 1 == 1:
+            pass
+
+
 try:
     if 1 == 1:
         pass
@@ -41,17 +51,6 @@ for a in [1, 2]:
 else:
     if 1 == 1:
         pass
-
-
-def test():
-    if 1 == 1:
-        pass
-
-
-class Test:
-    if 1 == 1:
-        pass
-
 
 while 1 < 2:
     if 1 == 1:
