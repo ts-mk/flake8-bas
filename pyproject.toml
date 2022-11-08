@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "flake8-bbs"
-version = "0.1.0.alpha.1"
+version = "0.1.0-alpha.2"
 description = "A flake8 extension that checks blank lines before statements"
 authors = ["Tomas Mrozek <tm@nohup.run>"]
 maintainers = ["Tomas Mrozek <tm@nohup.run>"]
