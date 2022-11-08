@@ -41,6 +41,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 skip-numeric-underscore-normalization = true
+force-exclude = ".*tests/fixtures/.*"
 
 [tool.interrogate]
 color = true

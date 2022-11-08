@@ -34,6 +34,9 @@ class Test:
         pass
 
     def test(self):
+        """
+        Docstring.
+        """
         if 1 == 1:
             pass
 

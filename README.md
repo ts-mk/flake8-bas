@@ -8,7 +8,13 @@
 
 ## Introduction
 
-While PEP8 doesn't provide any opinion on the use of blank lines before statements, some people believe that adding them improves code readability which is otherwise hindered despite syntax highlighting that modern code editors provide, as demonstrated in the following example:
+PEP 8 recommends to use blank lines only to separate logical sections:
+
+> Extra blank lines may be used (sparingly) to separate groups of related functions. Blank lines may be omitted between a bunch of related one-liners (e.g. a set of dummy implementations).
+>
+> Use blank lines in functions, sparingly, to indicate logical sections.
+
+However, some people believe that adding blank lines also before (compound) statements improves code readability which is otherwise hindered despite syntax highlighting that modern code editors provide, as demonstrated in the following example:
 
 ```python
 import os
@@ -22,7 +28,7 @@ if a == 2:
     print(a)
 ```
 
-The plugin therefore checks for a blank line before each statement as long as it's **not the first line of code within a module** and **not the first statement within another statement**.
+This Flake8 plugin therefore checks for a blank line before each statement as long as it's **not the first line of code within a module** and **not the first statement within another statement**.
 
 
 ## Requirements
@@ -123,9 +129,10 @@ The plugin checks for a blank line before **every statement**. There are no cust
 The benefit is that you could take advantage of Flake8's `per-file-ignores` (flake8>=3.7.0) config option and have a different behaviour for a different set of files:
 
 ```ini
+[flake8]
 per-file-ignores =
-    app/*: BBS130
-    tests/*: BBS011, BBS160
+    app/*: BBS102, BBS103, BBS104, BBS106, BBS107, BBS2
+    tests/*: BBS
 ```
 
 The drawback is that with more than 40 different errors, there is quite a bit to exclude... and it's certain that you would need to exclude some because the same or conflicting checks might already be applied by another plugin (e.g. checks by [flake8-import-order](https://github.com/PyCQA/flake8-import-order)) or should be handled by other formatting tools (e.g. [black](https://github.com/psf/black)).

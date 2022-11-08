@@ -18,7 +18,11 @@ def test_invalid_statements(invalid, error_formatter):
 
     for item in result:
         error_codes = "|".join(invalid.error_codes)
-        assert re.match(f"({error_codes}) ", item.message)
+
+        assert re.match(f"({error_codes}) ", item.message), (
+            f"Error code \"{re.match('([^ ]+)', item.message).groups()[0]}\" "
+            f"detected while \"{' or '.join(invalid.error_codes)}\" was expected"
+        )
 
 
 def test_error_code_uniqueness():
