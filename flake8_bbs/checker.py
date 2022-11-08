@@ -5,8 +5,6 @@ from collections import namedtuple
 from typing import Generator, List, Optional
 
 import pkg_resources
-from flake8.utils import stdin_get_value
-from pycodestyle import readlines
 
 Statement = namedtuple("Statement", ["keyword", "cls", "error_code"])
 Error = namedtuple("Error", ["lineno", "col_offset", "message", "type"])
@@ -63,7 +61,11 @@ class StatementChecker:
         self.statement_map = {s.cls: s for s in self.STATEMENTS}
         self.tree = tree
         self.filename = filename
-        self.lines = lines
+        self.blank_lines = [
+            lineno
+            for lineno, line in enumerate(lines, start=1)
+            if self.BLANK_LINE_RE.match(line)
+        ]
 
     @classmethod
     def parse_options(cls, options: argparse.Namespace) -> None:
@@ -73,25 +75,6 @@ class StatementChecker:
         :param options: list of options
         """
         cls.options = options
-
-    def _set_content(self) -> None:
-        """
-        Sets the content (lines, tree) based on the current state.
-        """
-        if self.filename in ("stdin", "-", None):
-            self.filename = "stdin"
-            self.lines = stdin_get_value().splitlines(True)
-        else:
-            self.lines = readlines(self.filename)
-
-        if self.tree is None:
-            self.tree = ast.parse("".join(self.lines))
-
-        self.blank_lines = [
-            lineno
-            for lineno, line in enumerate(self.lines, start=1)
-            if self.BLANK_LINE_RE.match(line)
-        ]
 
     def _node_invalid(self, node: ast.AST) -> bool:
         """
@@ -168,7 +151,6 @@ class StatementChecker:
         :return: error generator
         """
         previous_node = None
-        self._set_content()
 
         for node in ast.walk(self.tree):
             self._prepare_node(node=node, previous_node=previous_node)

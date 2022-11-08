@@ -1,0 +1,108 @@
+name: Build & deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      version-update:
+        description: Update version before deployment
+        required: false
+        type: choice
+        default: skip
+        options:
+          - skip
+          - prepatch
+          - preminor
+          - premajor
+  release:
+    types:
+      - released
+
+env:
+  POETRY_VERSION: '1.1.13'
+  PYTHON_VERSION: '3.9'
+  SELF: deployment.yml
+
+jobs:
+  build:
+    name: Build & deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump workflow context
+        uses: crazy-max/ghaction-dump-context@v1
+
+      - name: Input validation
+        if: >-
+          (
+            github.event_name == 'workflow_dispatch' &&
+            github.event.inputs.version-update != 'skip' &&
+            github.ref_protected == 'true'
+          )
+        run: |
+          echo 'ERROR: Version update cannot be performed on a protected branch'
+          exit 1
+
+      - name: Git checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ steps.token-generation.outputs.token }}
+
+      - name: Python setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Poetry installation
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: ${{ env.POETRY_VERSION }}
+
+      - name: Poetry setup
+        run: |
+          poetry config virtualenvs.create true
+          poetry config experimental.new-installer false
+
+      - name: Version update
+        id: version-update
+        if: >-
+          (
+            github.event_name == 'workflow_dispatch' &&
+            github.ref_protected != 'true' &&
+            github.event.inputs.version-update != 'skip'
+          )
+        run: |
+          VERSION=$(poetry version | awk '{print $2}')
+
+          if [[ "$VERSION" =~ [a-z] ]]; then \
+            poetry version prerelease; \
+          else \
+            poetry version ${{ github.event.inputs.version-update }}; \
+          fi
+          if [[ "$VERSION" == $(poetry version | awk '{print $2}') ]]; then \
+            echo "ERROR updating the package version"; \
+            exit 1; \
+          fi
+
+      - name: Run
+        id: run
+        run: >-
+          poetry publish
+          --build
+          --username="__token__"
+          --password="${{ secrets.PYPI_TOKEN }}"
+
+      - name: Git commit new version
+        if: >-
+          (
+            github.event_name == 'workflow_dispatch' &&
+            github.ref_protected != 'true' &&
+            github.event.inputs.version-update != 'skip' &&
+            steps.version-update.outcome == 'success'
+          )
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_author: GA bot <noreply@github.com>
+          commit_message: Update of the package version
+          commit_user_email: noreply@github.com
+          commit_user_name: GA bot
+          file_pattern: pyproject.toml poetry.lock
+          skip_checkout: true
