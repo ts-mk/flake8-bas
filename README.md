@@ -28,7 +28,7 @@ The plugin therefore checks for a blank line before each statement as long as it
 ## Requirements
 
 * Python >= 3.8
-* flake8 >= 4.0.0
+* flake8 >= 3.8.0
 
 
 ## Plugin state
