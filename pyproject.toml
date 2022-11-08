@@ -25,7 +25,6 @@ classifiers = [
 [tool.poetry.dependencies]
 python = ">=3.8"
 flake8 = ">=4.0.0"
-pycodestyle = "*"
 
 [tool.poetry.dev-dependencies]
 black = "22.6.0"
