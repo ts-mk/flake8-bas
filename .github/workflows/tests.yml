@@ -176,8 +176,9 @@ jobs:
         run: |
           poetry install --no-dev --remove-untracked
           poetry add "flake8==${{ matrix.flake8 }}"
+          echo -en "\nFlake8 version: "
           poetry run flake8 --version
 
       - name: Run
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        run: poetry run flake8 ./tests/fixtures/valid
+        run: poetry run flake8 -v --benchmark --isolated --select=BBS ./tests/fixtures/valid
