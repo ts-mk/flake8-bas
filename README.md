@@ -1,7 +1,7 @@
 # Flake8 - check for blank lines before statements
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)
-![License](https://img.shields.io/badge/License-proprietary-blue)
+![License](https://img.shields.io/badge/License-MIT-blue)
 ![Coverage](https://img.shields.io/badge/Coverage-96%25-brightgreen?logo=pytest&logoColor=white)
 ![CI](https://github.com/ts-mk/flake8-bbs/actions/workflows/tests.yml/badge.svg)
 
@@ -99,7 +99,7 @@ Two or more consecutive statements, e.g. `del`. Some of these errors shouldn't o
 
 ### Compound statements of the same type
 
-E.g. two or more consecutive `if` statements.
+Two or more consecutive compound statements, e.g. `for`.
 
 | Statement    | Error  |
 |--------------|--------|
@@ -120,7 +120,7 @@ E.g. two or more consecutive `if` statements.
 
 The plugin checks for a blank line before **every statement**. There are no custom configuration options. Instead, you could simply ignore some errors. This system has benefits as well as drawbacks.
 
-The benefit is that you could take advantage of Flake8's `per-file-ignores` (flake8>=3.7.0) config option and have a different behaviour for different set of files:
+The benefit is that you could take advantage of Flake8's `per-file-ignores` (flake8>=3.7.0) config option and have a different behaviour for a different set of files:
 
 ```ini
 per-file-ignores =
@@ -128,7 +128,7 @@ per-file-ignores =
     tests/*: BBS011, BBS160
 ```
 
-The drawback is that with 43 different errors, there is quite a bit to exclude... and it's certain that you would need to exclude some because the same/conflicting checks might already be applied by another plugin (e.g. checks by [flake8-import-order](https://github.com/PyCQA/flake8-import-order)) or should be handled by other formatting tools (e.g. [black](https://github.com/psf/black)).
+The drawback is that with more than 40 different errors, there is quite a bit to exclude... and it's certain that you would need to exclude some because the same or conflicting checks might already be applied by another plugin (e.g. checks by [flake8-import-order](https://github.com/PyCQA/flake8-import-order)) or should be handled by other formatting tools (e.g. [black](https://github.com/psf/black)).
 
 ### Recommended exclusions
 
@@ -136,7 +136,7 @@ A custom set of what makes sense to the author.
 
 ```ini
 [flake8]
-ignore =
+ignore = BBS102, BBS103, BBS104, BBS106, BBS107, BBS2
 ```
 
 ### All simple statements excluded
