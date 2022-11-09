@@ -19,6 +19,13 @@ TEST_ROOT = Path(__file__).parent
 
 
 def load_files(subdirectory: str) -> list[Path]:
+    """
+    Loads files fixtures subdirectory taking into account whether the statement exists
+    in the current version of Python.
+
+    :param subdirectory: subdirectory name
+    :return: list of files
+    """
     output = []
 
     for file in (TEST_ROOT / f"fixtures/{subdirectory}").rglob("*.py"):

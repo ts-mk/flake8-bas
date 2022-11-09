@@ -13,9 +13,9 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  COVERAGE_RESULT: ./.local/coverage.xml
+  COVERAGE_RESULT: ./coverage.xml
   POETRY_VERSION: '1.1.13'
-  PYTHON_VERSION: '3.9'
+  PYTHON_VERSION: '3.10'
   PACKAGE_NAME: 'flake8_bbs'
   SELF: tests.yml
 
@@ -115,6 +115,12 @@ jobs:
           --cov-report=xml:${{ env.COVERAGE_RESULT }}
           --cov-report=term
           ./tests/
+
+      - name: Upload coverage to Codecov
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        uses: codecov/codecov-action@v3
+        with:
+          files: ${{ env.COVERAGE_RESULT }}
 
   compatibility:
     name: Compatibility tests

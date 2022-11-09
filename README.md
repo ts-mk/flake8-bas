@@ -22,7 +22,7 @@ import os
 a = 3
 if a == 1:
     print(a)
-with os.open('filename') as f:
+with os.open('filename.txt') as f:
     content = f.read_lines()
 if a == 2:
     print(a)
@@ -37,21 +37,21 @@ This Flake8 plugin therefore checks for a blank line before each statement as lo
 * flake8 >= 3.8.0
 
 
-## Plugin state
+## Use in production
 
-Until version 1.0.0 is reached, this plugin is considered as **not ready for production**.
+Until version 1.0.0 is reached, this plugin is considered as **NOT ready for production**.
 
 
 ## Statements and their error codes
 
-The statements are split into different categories, based on whether they are [simple statements](https://docs.python.org/3.11/reference/simple_stmts.html) or [compound statements](https://docs.python.org/3.11/reference/compound_stmts.html) and whether the error occurs between two statements of the same type or not. This allows you to filter errors using `BBS` and the first digit, e.g. `BBS3`.
+The statements are split into different categories based on whether they are [simple statements](https://docs.python.org/3.11/reference/simple_stmts.html) or [compound statements](https://docs.python.org/3.11/reference/compound_stmts.html) and whether the error occurs between two statements of the same type or not. This allows you to filter entire groups using `BBS` and the first digit, e.g. `BBS3`.
 
-### Simple statements
+### BBS1xx: Simple statements
 
 Simple statements, excluding [expression statements](https://docs.python.org/3.11/reference/simple_stmts.html#expression-statements) and [assignment statements](https://docs.python.org/3.11/reference/simple_stmts.html#assignment-statements).
 
 | Statement     | Error  |
-|---------------|--------|
+|:--------------|:-------|
 | `assert`      | BBS101 |
 | `break`       | BBS102 |
 | `continue`    | BBS103 |
@@ -67,12 +67,12 @@ Simple statements, excluding [expression statements](https://docs.python.org/3.1
 | `yield from`  | BBS113 |
 
 
-### Simple statements of the same type
+### BBS2xx: Simple statements of the same type
 
-Two or more consecutive statements, e.g. `del`. Some of these errors shouldn't occur (e.g. `return` followed by another `return`) because having consecutive siblings of those types does not make sense but the plugin would raise those errors anyway.
+Two or more consecutive simple statements, e.g. `del`. Some of these errors shouldn't occur (e.g. `return` followed by another `return`) because having consecutive siblings of those types does not make sense but the plugin would raise those errors anyway.
 
 | Statement     | Error  |
-|---------------|--------|
+|:--------------|:-------|
 | `assert`      | BBS201 |
 | `break`       | BBS202 |
 | `continue`    | BBS203 |
@@ -87,10 +87,10 @@ Two or more consecutive statements, e.g. `del`. Some of these errors shouldn't o
 | `yield`       | BBS212 |
 | `yield from`  | BBS213 |
 
-### Compound statements
+### BBS3xx: Compound statements
 
 | Statement    | Error  |
-|--------------|--------|
+|:-------------|:-------|
 | `async def`  | BBS301 |
 | `async for`  | BBS302 |
 | `async with` | BBS303 |
@@ -103,12 +103,12 @@ Two or more consecutive statements, e.g. `del`. Some of these errors shouldn't o
 | `while`      | BBS310 |
 | `with`       | BBS311 |
 
-### Compound statements of the same type
+### BBS4xx: Compound statements of the same type
 
 Two or more consecutive compound statements, e.g. `for`.
 
 | Statement    | Error  |
-|--------------|--------|
+|:-------------|:-------|
 | `async def`  | BBS401 |
 | `async for`  | BBS402 |
 | `async with` | BBS403 |
@@ -126,13 +126,14 @@ Two or more consecutive compound statements, e.g. `for`.
 
 The plugin checks for a blank line before **every statement**. There are no custom configuration options. Instead, you could simply ignore some errors. This system has benefits as well as drawbacks.
 
-The benefit is that you could take advantage of Flake8's `per-file-ignores` (flake8>=3.7.0) config option and have a different behaviour for a different set of files:
+The benefit is that you could take advantage of Flake8's `ignore` and `per-file-ignores` (flake8>=3.7.0) config options and have a different behaviour for a different set of files:
 
 ```ini
 [flake8]
+ignore = BBS2
 per-file-ignores =
-    app/*: BBS102, BBS103, BBS104, BBS106, BBS107, BBS2
-    tests/*: BBS
+    app/*: BBS101, BBS102, BBS103, BBS104, BBS105, BBS106, BBS107, BBS109, BBS110
+    tests/*: BBS1
 ```
 
 The drawback is that with more than 40 different errors, there is quite a bit to exclude... and it's certain that you would need to exclude some because the same or conflicting checks might already be applied by another plugin (e.g. checks by [flake8-import-order](https://github.com/PyCQA/flake8-import-order)) or should be handled by other formatting tools (e.g. [black](https://github.com/psf/black)).
@@ -143,7 +144,7 @@ A custom set of what makes sense to the author.
 
 ```ini
 [flake8]
-ignore = BBS102, BBS103, BBS104, BBS106, BBS107, BBS2
+ignore = BBS101, BBS102, BBS103, BBS104, BBS105, BBS106, BBS107, BBS109, BBS110, BBS2
 ```
 
 ### All simple statements excluded
