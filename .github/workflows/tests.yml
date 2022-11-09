@@ -14,6 +14,7 @@ concurrency:
 
 env:
   POETRY_VERSION: '1.1.13'
+  # The version must match the one in .pre-commit-config.yaml
   PYTHON_VERSION: '3.10'
   PACKAGE_NAME: 'flake8_bbs'
   SELF: tests.yml
@@ -50,20 +51,9 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Pre-commit cache
-        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pre-commit
-          key: pre-commit-${{ env.PYTHON_VERSION }}-${{ hashFiles('.pre-commit-config.yaml') }}
-
-      - name: Pre-commit installation
-        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        run: python -m pip install pre-commit
-
       - name: Run
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        run: pre-commit run --all-files
+        uses: pre-commit/action@v3.0.0
 
   tests:
     name: Unit tests
