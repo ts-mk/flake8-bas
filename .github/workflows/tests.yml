@@ -23,6 +23,9 @@ jobs:
     name: Pre-commit
     runs-on: ubuntu-latest
     steps:
+      - name: Dump workflow context
+        uses: crazy-max/ghaction-dump-context@v1
+
       - name: Git checkout
         uses: actions/checkout@v3
 
@@ -47,9 +50,20 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Pre-commit cache
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ env.PYTHON_VERSION }}-${{ hashFiles('.pre-commit-config.yaml') }}
+
+      - name: Pre-commit installation
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        run: python -m pip install pre-commit
+
       - name: Run
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        uses: pre-commit/action@v3.0.0
+        uses: pre-commit run --all-files
 
   tests:
     name: Unit tests
