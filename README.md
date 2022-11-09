@@ -2,7 +2,7 @@
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-blue)
-![Coverage](https://img.shields.io/badge/Coverage-96%25-brightgreen?logo=pytest&logoColor=white)
+![codecov](https://codecov.io/gh/ts-mk/flake8-bbs/branch/initial/graph/badge.svg?token=PI2I083V09)]
 ![CI](https://github.com/ts-mk/flake8-bbs/actions/workflows/tests.yml/badge.svg)
 
 
