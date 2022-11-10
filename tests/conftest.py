@@ -102,7 +102,6 @@ def valid(request: SubRequest) -> CheckerTester:
     return CheckerTester(
         request.param,
         StatementChecker(
-            filename=str(request.param),
             tree=ast.parse(content),
             lines=[f"{line}\n" for line in content.split("\n")],
         ),
@@ -124,7 +123,6 @@ def invalid(request: SubRequest) -> CheckerTester:
     return CheckerTester(
         request.param,
         StatementChecker(
-            filename=str(request.param),
             tree=ast.parse(content),
             lines=[f"{line}\n" for line in content.split("\n")],
         ),

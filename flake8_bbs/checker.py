@@ -218,18 +218,15 @@ class StatementChecker:
 
     def __init__(
         self,
-        filename: str,
         tree: Optional[ast.Module] = None,
         lines: Optional[List[str]] = None,
     ) -> None:
         """
-        :param filename: filename of the module
         :param tree: parsed abstract syntax tree of a module
         :param lines: module's lines of code
         """
         self.statement_map = {s.cls: s for s in STATEMENTS if s.cls}
         self.tree = tree
-        self.filename = filename
         self.blank_lines = [
             lineno
             for lineno, line in enumerate(lines, start=1)

@@ -42,9 +42,7 @@ def stdin(ctx: Context, param: Argument, value: Optional[str] = None) -> Optiona
 @argument("errors", callback=stdin, required=False)
 @option("--directory", required=True, help="Directory path")
 def assert_error_count(errors: str, directory: str) -> None:
-    if not errors:
-        raise Exception("Missing value for ERRORS argument")
-
+    errors = errors or ""
     directory = Path(directory)
     input_error_count = len(errors.split("\n"))
     error_count = 0
