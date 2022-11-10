@@ -2,7 +2,7 @@ import ast
 import re
 import sys
 from pathlib import Path
-from typing import Callable, NamedTuple
+from typing import Callable, NamedTuple, Tuple
 
 import pytest
 from _pytest.fixtures import SubRequest
@@ -13,7 +13,7 @@ from flake8_bbs.checker import Error, STATEMENTS, StatementChecker
 class CheckerTester(NamedTuple):
     file: Path
     checker: StatementChecker
-    error_codes: tuple[str, ...]
+    error_codes: Tuple[str, ...]
     error_count: int
 
 
@@ -44,7 +44,7 @@ def load_files(subdirectory: str) -> list[Path]:
     return output
 
 
-def errors_from_file(file: Path) -> tuple[str, ...]:
+def errors_from_file(file: Path) -> Tuple[str, ...]:
     """
     Resolves the package's Flake8 error codes based on the file's name.
 

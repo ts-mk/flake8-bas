@@ -1,7 +1,7 @@
 import argparse
 import ast
 import re
-from typing import Generator, List, NamedTuple, Optional
+from typing import Generator, List, NamedTuple, Optional, Tuple
 
 import pkg_resources
 
@@ -15,7 +15,7 @@ class Statement(NamedTuple):
     cls: type
     error_code: str
     sibling_error_code: str
-    python_compatibility: tuple[int, int]
+    python_compatibility: Tuple[int, int]
 
 
 class Error(NamedTuple):
