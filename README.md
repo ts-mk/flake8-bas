@@ -2,11 +2,8 @@
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-blue)
-![codecov](https://codecov.io/gh/ts-mk/flake8-bbs/branch/initial/graph/badge.svg?token=PI2I083V09)]
+![codecov](https://codecov.io/gh/ts-mk/flake8-bbs/branch/master/graph/badge.svg?token=PI2I083V09)
 ![CI](https://github.com/ts-mk/flake8-bbs/actions/workflows/tests.yml/badge.svg)
-
-
-## Introduction
 
 PEP 8 recommends to use blank lines only to separate logical sections:
 
@@ -28,7 +25,7 @@ if a == 2:
     print(a)
 ```
 
-This Flake8 plugin therefore checks for a blank line before each statement as long as it's **not the first line of code within a module** and **not the first statement within another statement**.
+This Flake8 plugin therefore checks for a blank line before each statement as long as it's **not the first line of code within a module** and **not the first statement within a compound statement**.
 
 
 ## Requirements
@@ -44,82 +41,47 @@ Until version 1.0.0 is reached, this plugin is considered as **NOT ready for pro
 
 ## Statements and their error codes
 
-The statements are split into different categories based on whether they are [simple statements](https://docs.python.org/3.11/reference/simple_stmts.html) or [compound statements](https://docs.python.org/3.11/reference/compound_stmts.html) and whether the error occurs between two statements of the same type or not. This allows you to filter entire groups using `BBS` and the first digit, e.g. `BBS3`.
+The statements are split into different categories based on whether they are [simple statements](https://docs.python.org/3.11/reference/simple_stmts.html) or [compound statements](https://docs.python.org/3.11/reference/compound_stmts.html), and whether the error occurs between two statements of the same type or not. This allows you to filter entire groups using `BBS` and the first digit, e.g. `BBS3`.
 
-### BBS1xx: Simple statements
+### BBS1xx/BBS2xx: Simple statements
 
-Simple statements, excluding [expression statements](https://docs.python.org/3.11/reference/simple_stmts.html#expression-statements) and [assignment statements](https://docs.python.org/3.11/reference/simple_stmts.html#assignment-statements).
+Simple statements, excluding [expression statements](https://docs.python.org/3.11/reference/simple_stmts.html#expression-statements) and [assignment statements](https://docs.python.org/3.11/reference/simple_stmts.html#assignment-statements). "Sibling Error" is used for two or more consecutive statements of the same type, e.g. `del`.
 
-| Statement     | Error  |
-|:--------------|:-------|
-| `assert`      | BBS101 |
-| `break`       | BBS102 |
-| `continue`    | BBS103 |
-| `del`         | BBS104 |
-| `global`      | BBS105 |
-| `import`      | BBS106 |
-| `import from` | BBS107 |
-| `nonlocal`    | BBS108 |
-| `pass`        | BBS109 |
-| `raise`       | BBS110 |
-| `return`      | BBS111 |
-| `yield`       | BBS112 |
-| `yield from`  | BBS113 |
+| Statement     | Error  | Sibling Error |
+|:--------------|:-------|:--------------|
+| `assert`      | BBS101 | BBS201        |
+| `break`       | BBS102 | BBS202        |
+| `continue`    | BBS103 | BBS203        |
+| `del`         | BBS104 | BBS204        |
+| `global`      | BBS105 | BBS205        |
+| `import`      | BBS106 | BBS206        |
+| `import from` | BBS107 | BBS207        |
+| `nonlocal`    | BBS108 | BBS208        |
+| `pass`        | BBS109 | BBS209        |
+| `raise`       | BBS110 | BBS210        |
+| `return`      | BBS111 | BBS211        |
+| `yield`       | BBS112 | BBS212        |
+| `yield from`  | BBS113 | BBS213        |
 
+**Note:** Some of these errors shouldn't occur (e.g. `return` followed by another `return`) because having consecutive siblings of those types does not make sense, but the plugin would raise these errors anyway.
 
-### BBS2xx: Simple statements of the same type
+### BBS3xx/BBS4xx: Compound statements
 
-Two or more consecutive simple statements, e.g. `del`. Some of these errors shouldn't occur (e.g. `return` followed by another `return`) because having consecutive siblings of those types does not make sense but the plugin would raise those errors anyway.
+"Sibling Error" is used for two or more consecutive statements of the same type, e.g. `for`.
 
-| Statement     | Error  |
-|:--------------|:-------|
-| `assert`      | BBS201 |
-| `break`       | BBS202 |
-| `continue`    | BBS203 |
-| `del`         | BBS204 |
-| `global`      | BBS205 |
-| `import`      | BBS206 |
-| `import from` | BBS207 |
-| `nonlocal`    | BBS208 |
-| `pass`        | BBS209 |
-| `raise`       | BBS210 |
-| `return`      | BBS211 |
-| `yield`       | BBS212 |
-| `yield from`  | BBS213 |
-
-### BBS3xx: Compound statements
-
-| Statement    | Error  |
-|:-------------|:-------|
-| `async def`  | BBS301 |
-| `async for`  | BBS302 |
-| `async with` | BBS303 |
-| `class`      | BBS304 |
-| `def`        | BBS305 |
-| `for`        | BBS306 |
-| `if`         | BBS307 |
-| `match`      | BBS308 |
-| `try`        | BBS309 |
-| `while`      | BBS310 |
-| `with`       | BBS311 |
-
-### BBS4xx: Compound statements of the same type
-
-Two or more consecutive compound statements, e.g. `for`.
-
-| Statement    | Error  |
-|:-------------|:-------|
-| `async def`  | BBS401 |
-| `async for`  | BBS402 |
-| `async with` | BBS403 |
-| `class`      | BBS404 |
-| `def`        | BBS405 |
-| `for`        | BBS406 |
-| `if`         | BBS407 |
-| `match`      | BBS408 |
-| `try`        | BBS409 |
-| `while`      | BBS410 |
-| `with`       | BBS411 |
+| Statement    | Error  | Sibling Error |
+|:-------------|:-------|:--------------|
+| `async def`  | BBS301 | BBS401        |
+| `async for`  | BBS302 | BBS402        |
+| `async with` | BBS303 | BBS403        |
+| `class`      | BBS304 | BBS404        |
+| `def`        | BBS305 | BBS405        |
+| `for`        | BBS306 | BBS406        |
+| `if`         | BBS307 | BBS407        |
+| `match`      | BBS308 | BBS408        |
+| `try`        | BBS309 | BBS409        |
+| `while`      | BBS310 | BBS410        |
+| `with`       | BBS311 | BBS411        |
 
 
 ## Configuration

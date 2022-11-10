@@ -1,18 +1,21 @@
 import ast
 import re
 import sys
-from collections import namedtuple
 from pathlib import Path
-from typing import Callable
+from typing import Callable, NamedTuple
 
 import pytest
 from _pytest.fixtures import SubRequest
 
-from flake8_bbs.checker import StatementChecker, STATEMENTS
+from flake8_bbs.checker import Error, STATEMENTS, StatementChecker
 
-CheckerTester = namedtuple(
-    "CheckerTester", ["file", "checker", "error_codes", "error_count"]
-)
+
+class CheckerTester(NamedTuple):
+    file: Path
+    checker: StatementChecker
+    error_codes: tuple[str, ...]
+    error_count: int
+
 
 FILE_FORMAT = re.compile(r"([a-z\s]+)\-?(\d*)")
 TEST_ROOT = Path(__file__).parent
@@ -41,9 +44,9 @@ def load_files(subdirectory: str) -> list[Path]:
     return output
 
 
-def errors_from_file(file: Path) -> tuple:
+def errors_from_file(file: Path) -> tuple[str, ...]:
     """
-    Resolves the packages Flake8 error code based on the file's name.
+    Resolves the package's Flake8 error codes based on the file's name.
 
     :param file: file object
     :return: error code
@@ -80,7 +83,7 @@ def error_formatter() -> Callable:
     :return: function
     """
 
-    def _(file: Path, errors: list) -> str:
+    def _(file: Path, errors: list[Error]) -> str:
         return ", ".join(f"{file.name}:{e.lineno}:{e.col_offset}" for e in errors)
 
     return _

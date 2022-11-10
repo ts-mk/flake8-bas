@@ -14,10 +14,11 @@ concurrency:
 
 env:
   POETRY_VERSION: '1.1.13'
-  # The version must match the one in .pre-commit-config.yaml
+  # This Python version must match the one in .pre-commit-config.yaml
   PYTHON_VERSION: '3.10'
   PACKAGE_NAME: 'flake8_bbs'
   SELF: tests.yml
+  UTILS: ./.github/workflows/utils.py
 
 jobs:
   pre-commit:
@@ -36,12 +37,14 @@ jobs:
         with:
           path: ./.local/result_cache
           key: >-
-            pre-commit-result-${{ env.PYTHON_VERSION }}-${{ github.job }}-${{ github.ref }}-${{
+            ${{ github.job }}-result-${{ env.PYTHON_VERSION }}-${{ github.ref }}-${{
               hashFiles(
                 format('.github/workflows/{0}', env.SELF),
                 format('{0}/**.py', env.PACKAGE_NAME),
                 'tests/**',
-                'poetry.lock'
+                '.pre-commit-config.yaml',
+                'pyproject.toml',
+                'setup.cfg'
               )
             }}
 
@@ -71,7 +74,7 @@ jobs:
         with:
           path: ./.local/result_cache
           key: >-
-            unit-result-${{ env.PYTHON_VERSION }}-${{ github.job }}-${{ github.ref }}-${{
+            ${{ github.job }}-result-${{ env.PYTHON_VERSION }}-${{ github.ref }}-${{
               hashFiles(
                 format('.github/workflows/{0}', env.SELF),
                 format('{0}/**.py', env.PACKAGE_NAME),
@@ -95,15 +98,20 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/pypoetry/virtualenvs
-          key: unit-poetry-${{ env.PYTHON_VERSION }}-${{ hashFiles('poetry.lock') }}
+          key: ${{ github.job }}-poetry-${{ env.PYTHON_VERSION }}-${{ hashFiles('poetry.lock') }}
           restore-keys: |
-            unit-poetry-${{ env.PYTHON_VERSION }}-
+            ${{ github.job }}-poetry-${{ env.PYTHON_VERSION }}-
 
       - name: Poetry installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
         uses: abatilo/actions-poetry@v2.0.0
         with:
           poetry-version: ${{ env.POETRY_VERSION }}
+
+      - name: Poetry setup
+        run: |
+          poetry config virtualenvs.create true
+          poetry config experimental.new-installer false
 
       - name: Package installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
@@ -139,7 +147,7 @@ jobs:
         with:
           path: ./.local/result_cache
           key: >-
-            compat-result-$${{ matrix.python }}-$${{ matrix.flake8 }}--${{ github.job }}-${{ github.ref }}-${{
+            ${{ github.job }}-result-${{ matrix.python }}-${{ matrix.flake8 }}-${{ github.ref }}-${{
               hashFiles(
                 format('.github/workflows/{0}', env.SELF),
                 format('{0}/**.py', env.PACKAGE_NAME),
@@ -163,9 +171,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/pypoetry/virtualenvs
-          key: compat-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-${{ hashFiles('poetry.lock') }}
+          key: ${{ github.job }}-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-${{ hashFiles('poetry.lock') }}
           restore-keys: |
-            compat-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-
+            ${{ github.job }}-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-
 
       - name: Poetry installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
@@ -173,14 +181,21 @@ jobs:
         with:
           poetry-version: ${{ env.POETRY_VERSION }}
 
+      - name: Poetry setup
+        run: |
+          poetry config virtualenvs.create true
+          poetry config experimental.new-installer false
+
       - name: Package installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
         run: |
           poetry install --no-dev --remove-untracked
-          poetry add "flake8==${{ matrix.flake8 }}"
-          echo -en "\nFlake8 version: "
-          poetry run flake8 --version
+          poetry add "flake8==${{ matrix.flake8 }}" "click>=8.1.0,<9.0.0"
+          echo -e "\nFlake8 version: $(poetry run flake8 --version)"
 
       - name: Run
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        run: poetry run flake8 -v --benchmark --isolated --select=BBS ./tests/fixtures/valid
+        run: |
+          poetry run flake8 --isolated --select=BBS ./tests/fixtures/valid
+          poetry run flake8 --isolated --select=BBS ./tests/fixtures/invalid \
+          | poetry run ${{ env.UTILS }} assert-error-count --directory=./tests/fixtures/invalid

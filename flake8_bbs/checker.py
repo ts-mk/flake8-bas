@@ -1,16 +1,33 @@
 import argparse
 import ast
 import re
-from collections import namedtuple
-from typing import Generator, List, Optional
+from typing import Generator, List, NamedTuple, Optional
 
 import pkg_resources
 
-Statement = namedtuple(
-    "Statement",
-    ["keyword", "cls", "error_code", "sibling_error_code", "python_compatibility"],
-)
-Error = namedtuple("Error", ["lineno", "col_offset", "message", "type"])
+
+class Statement(NamedTuple):
+    """
+    Python statement definition
+    """
+
+    keyword: str
+    cls: type
+    error_code: str
+    sibling_error_code: str
+    python_compatibility: tuple[int, int]
+
+
+class Error(NamedTuple):
+    """
+    Error item
+    """
+
+    lineno: int
+    col_offset: int
+    message: str
+    checker_type: type
+
 
 ERROR_NAMESPACE = "BBS"
 SIMPLE_STATEMENTS = (
@@ -185,7 +202,6 @@ COMPOUND_STATEMENTS = (
         (3, 5),
     ),
 )
-
 STATEMENTS = SIMPLE_STATEMENTS + COMPOUND_STATEMENTS
 
 
@@ -223,7 +239,7 @@ class StatementChecker:
     @classmethod
     def parse_options(cls, options: argparse.Namespace) -> None:
         """
-        Sets Flake8 options.
+        Sets Flake8's options.
 
         :param options: list of options
         """

@@ -330,10 +330,21 @@ platformdirs = ">=2.4,<3"
 docs = ["proselint (>=0.13)", "sphinx (>=5.3)", "sphinx-argparse (>=0.3.2)", "sphinx-rtd-theme (>=1)", "towncrier (>=22.8)"]
 testing = ["coverage (>=6.2)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7)", "packaging (>=21.3)", "pytest (>=7.0.1)", "pytest-env (>=0.6.2)", "pytest-freezegun (>=0.4.2)", "pytest-mock (>=3.6.1)", "pytest-randomly (>=3.10.3)", "pytest-timeout (>=2.1)"]
 
+[[package]]
+name = "yappi"
+version = "1.4.0"
+description = "Yet Another Python Profiler"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.extras]
+test = ["gevent (>=20.6.2)"]
+
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8"
-content-hash = "9690c4f9204471976441bbccdc19ed19eac19372a1862b60b1c2aa4b31dafaf3"
+content-hash = "49d3449670d09a0ec914767bc1d8d352f0b9f61d0f8b9d87068ae4c0673d48b6"
 
 [metadata.files]
 attrs = []
@@ -424,3 +435,4 @@ tomli = [
 ]
 typing-extensions = []
 virtualenv = []
+yappi = []
