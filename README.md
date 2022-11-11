@@ -1,7 +1,8 @@
 # Flake8 - check for blank lines before statements
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-blue)
+![PyPI](https://img.shields.io/pypi/v/flake8-bbs.svg?label=PyPI&logo=PyPI&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-blue?logo=opensourceinitiative&logoColor=white)
 ![codecov](https://codecov.io/gh/ts-mk/flake8-bbs/branch/master/graph/badge.svg?token=PI2I083V09)
 ![CI](https://github.com/ts-mk/flake8-bbs/actions/workflows/tests.yml/badge.svg)
 
@@ -11,18 +12,16 @@ PEP 8 recommends to use blank lines only to separate logical sections:
 >
 > Use blank lines in functions, sparingly, to indicate logical sections.
 
-However, some people believe that adding blank lines also before (compound) statements improves code readability which is otherwise hindered despite syntax highlighting that modern code editors provide, as demonstrated in the following example:
+However, some people believe that adding blank lines also before (compound) statements and some simple statements improves code readability which is otherwise hindered despite syntax highlighting that modern code editors provide, as demonstrated in the following example:
 
 ```python
-import os
-
-a = 3
+a = 1
+b = 2
 if a == 1:
     print(a)
-with os.open('filename.txt') as f:
-    content = f.read_lines()
-if a == 2:
-    print(a)
+for n in range(10):
+    print(n)
+return a
 ```
 
 This Flake8 plugin therefore checks for a blank line before each statement as long as it's **not the first line of code within a module** and **not the first statement within a compound statement**.
@@ -94,24 +93,24 @@ The benefit is that you could take advantage of Flake8's `ignore` and `per-file-
 [flake8]
 ignore = BBS2
 per-file-ignores =
-    app/*: BBS101, BBS102, BBS103, BBS104, BBS105, BBS106, BBS107, BBS109, BBS110
-    tests/*: BBS1
+    app/*: BBS101, BBS102, BBS103, BBS104, BBS105, BBS106, BBS107, BBS108, BBS109, BBS110, BBS2
+    tests/*: BBS1, BBS2
 ```
 
-The drawback is that with more than 40 different errors, there is quite a bit to exclude... and it's certain that you would need to exclude some because the same or conflicting checks might already be applied by another plugin (e.g. checks by [flake8-import-order](https://github.com/PyCQA/flake8-import-order)) or should be handled by other formatting tools (e.g. [black](https://github.com/psf/black)).
+The drawback is that there are no sane defaults and you would inevitably need to exclude some errors, either because they make little sense or because the same/conflicting checks might already be applied by another plugin (e.g. checks by [flake8-import-order](https://github.com/PyCQA/flake8-import-order)) or should be handled by other formatting tools (e.g. [black](https://github.com/psf/black)).
 
 ### Recommended exclusions
 
-A custom set of what makes sense to the author.
+Only compound statements plus `return` and `yield` would raise errors.
 
 ```ini
 [flake8]
-ignore = BBS101, BBS102, BBS103, BBS104, BBS105, BBS106, BBS107, BBS109, BBS110, BBS2
+ignore = BBS101, BBS102, BBS103, BBS104, BBS105, BBS106, BBS107, BBS108, BBS109, BBS110, BBS2
 ```
 
 ### All simple statements excluded
 
-...so only compound statements would raise errors.
+Only compound statements would raise errors.
 
 ```ini
 [flake8]

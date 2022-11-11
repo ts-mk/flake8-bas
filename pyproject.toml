@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "flake8-bbs"
 version = "0.1.0-alpha.3"
-description = "A flake8 extension that checks blank lines before statements"
+description = "Flake8 extension that checks for blank lines before (compound) statements"
 authors = ["Tomas Mrozek <tm@nohup.run>"]
 maintainers = ["Tomas Mrozek <tm@nohup.run>"]
 repository = "https://github.com/ts-mk/flake8-bbs/"

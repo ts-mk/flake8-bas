@@ -216,11 +216,7 @@ class StatementChecker:
     version = pkg_resources.get_distribution(name).version
     options = None
 
-    def __init__(
-        self,
-        tree: Optional[ast.Module] = None,
-        lines: Optional[List[str]] = None,
-    ) -> None:
+    def __init__(self, tree: ast.Module, lines: List[str]) -> None:
         """
         :param tree: parsed abstract syntax tree of a module
         :param lines: module's lines of code
@@ -279,7 +275,8 @@ class StatementChecker:
         else:
             return self.statement_map[node.__class__].error_code
 
-    def _is_first_child(self, node: ast.AST) -> bool:
+    @classmethod
+    def _is_first_child(cls, node: ast.AST) -> bool:
         """
         Checks if the node is the first child within its parent.
 
@@ -297,8 +294,9 @@ class StatementChecker:
 
         return False
 
+    @classmethod
     def _prepare_node(
-        self, node: ast.AST, previous_node: Optional[ast.AST] = None
+        cls, node: ast.AST, previous_node: Optional[ast.AST] = None
     ) -> None:
         """
         Prepares the  node for further use.

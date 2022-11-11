@@ -2,12 +2,12 @@ import ast
 import re
 import sys
 from pathlib import Path
-from typing import Callable, NamedTuple, Tuple
+from typing import List, NamedTuple, Tuple
 
 import pytest
 from _pytest.fixtures import SubRequest
 
-from flake8_bbs.checker import Error, STATEMENTS, StatementChecker
+from flake8_bbs.checker import STATEMENTS, StatementChecker
 
 
 class CheckerTester(NamedTuple):
@@ -21,7 +21,7 @@ FILE_FORMAT = re.compile(r"([a-z\s]+)\-?(\d*)")
 TEST_ROOT = Path(__file__).parent
 
 
-def load_files(subdirectory: str) -> list[Path]:
+def load_files(subdirectory: str) -> List[Path]:
     """
     Loads files fixtures subdirectory taking into account whether the statement exists
     in the current version of Python.
@@ -73,20 +73,6 @@ def error_count_from_file(file: Path) -> int:
     match = FILE_FORMAT.match(file.stem)
 
     return int(match.groups()[1]) if match else 0
-
-
-@pytest.fixture()
-def error_formatter() -> Callable:
-    """
-    Returns a function that can be used to format an error string.
-
-    :return: function
-    """
-
-    def _(file: Path, errors: list[Error]) -> str:
-        return ", ".join(f"{file.name}:{e.lineno}:{e.col_offset}" for e in errors)
-
-    return _
 
 
 @pytest.fixture(params=load_files("valid"))
