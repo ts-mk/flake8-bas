@@ -1,50 +1,46 @@
-if 1 == 1:  # Check 1
+with a() as b:  # Check 1
     pass
 
-if 1 == 1:  # Check 2
+with a() as b:  # Check 2
     pass
 
 """
 Lorem ipsum dolor sit amet
 """
-if 1 == 1:  # Check 3
+with a() as b:  # Check 3
     pass
 
 # Lorem ipsum dolor sit amet
-if 1 == 1:  # Check 4
+with a() as b:  # Check 4
     pass
 
 if 1 == 1:  # Check 5
-    if 2 == 2:
+    with a() as b:
         pass
 elif 2 == 2:
-    if 1 == 1:
+    with a() as b:
         pass
 else:
-    if 1 == 1:
+    with a() as b:
         pass
 
 for a in [1, 2]:  # Check 6
-    if 1 == 1:
+    with a() as b:
         pass
 else:
-    if 1 == 1:
+    with a() as b:
         pass
 
 while True:  # Check 7
-    if 1 == 1:
+    with a() as b:
         pass
 else:
-    if 1 == 1:
+    with a() as b:
         pass
 
 try: # Check 8
-    if 1 == 1:
+    with a() as b:
         pass
 except Exception:
-    if 1 == 1:
+    with a() as b:
         pass
-
-# Inline if/else should not be affected
-b = 1
-a = 1 if b == 2 else 0

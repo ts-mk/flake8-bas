@@ -2,7 +2,7 @@ import ast
 import re
 import sys
 from pathlib import Path
-from typing import List, NamedTuple, Tuple
+from typing import List, NamedTuple, Optional, Tuple
 
 import pytest
 from _pytest.fixtures import SubRequest
@@ -10,18 +10,19 @@ from _pytest.fixtures import SubRequest
 from flake8_bbs.checker import STATEMENTS, StatementChecker
 
 
-class CheckerTester(NamedTuple):
+class StatementTest(NamedTuple):
     file: Path
     checker: StatementChecker
     error_codes: Tuple[str, ...]
     error_count: int
 
 
-FILE_FORMAT = re.compile(r"([a-z\s]+)\-?(\d*)")
+FILE_FORMAT = re.compile(r"([a-z_]+)\-?(\d*)")
+STATEMENT_MAP = {s.keyword: s for s in STATEMENTS}
 TEST_ROOT = Path(__file__).parent
 
 
-def load_files(subdirectory: str) -> List[Path]:
+def load_files(subdirectory: Optional[str] = "") -> List[Path]:
     """
     Loads files fixtures subdirectory taking into account whether the statement exists
     in the current version of Python.
@@ -31,15 +32,12 @@ def load_files(subdirectory: str) -> List[Path]:
     """
     output = []
 
-    for file in (TEST_ROOT / f"fixtures/{subdirectory}").rglob("*.py"):
+    for file in (TEST_ROOT / "fixtures" / subdirectory).rglob("*.py"):
         match = FILE_FORMAT.match(file.stem)
+        statement = STATEMENT_MAP[match.groups()[0].replace("_", " ")]
 
-        for statement in STATEMENTS:
-            if (
-                match.groups()[0] == statement.keyword
-                and sys.version_info >= statement.python_compatibility
-            ):
-                output.append(file)
+        if sys.version_info >= statement.python_compatibility:
+            output.append(file)
 
     return output
 
@@ -53,12 +51,9 @@ def errors_from_file(file: Path) -> Tuple[str, ...]:
     """
     try:
         match = FILE_FORMAT.match(file.stem)
+        statement = STATEMENT_MAP[match.groups()[0].replace("_", " ")]
 
-        for statement in STATEMENTS:
-            if match.groups()[0] == statement.keyword:
-                return (statement.error_code, statement.sibling_error_code)
-        else:
-            raise Exception
+        return (statement.error_code, statement.sibling_error_code)
     except Exception as e:
         raise Exception("Statement not found for the given filename") from e
 
@@ -72,41 +67,22 @@ def error_count_from_file(file: Path) -> int:
     """
     match = FILE_FORMAT.match(file.stem)
 
-    return int(match.groups()[1]) if match else 0
+    try:
+        return int(match.groups()[1])
+    except Exception:
+        return 0
 
 
-@pytest.fixture(params=load_files("valid"))
-def valid(request: SubRequest) -> CheckerTester:
+@pytest.fixture()
+def statement_test(request: SubRequest) -> StatementTest:
     """
-    Returns StatementChecker context for one of the valid fixture files.
+    Returns a StatementTest for the given file.
 
-    :param request: fixture request instance
-    :return: tester
-    """
-    content = request.param.read_text()
-
-    return CheckerTester(
-        request.param,
-        StatementChecker(
-            tree=ast.parse(content),
-            lines=[f"{line}\n" for line in content.split("\n")],
-        ),
-        errors_from_file(request.param),
-        0,
-    )
-
-
-@pytest.fixture(params=load_files("invalid"))
-def invalid(request: SubRequest) -> CheckerTester:
-    """
-    Returns StatementChecker context for one of the invalid fixture files.
-
-    :param request: fixture request instance
-    :return: tester
+    :return: function
     """
     content = request.param.read_text()
 
-    return CheckerTester(
+    return StatementTest(
         request.param,
         StatementChecker(
             tree=ast.parse(content),

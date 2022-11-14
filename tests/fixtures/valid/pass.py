@@ -1,33 +1,33 @@
-del a  # Check 1
+pass  # Check 1
 
-del a  # Check 2
+pass  # Check 2
 
 """
 Lorem ipsum dolor sit amet
 """
-del a  # Check 3
+pass  # Check 3
 
 # Lorem ipsum dolor sit amet
-del a  # Check 4
+pass  # Check 4
 
 if 1 == 1:  # Check 5
-    del a
+    pass
 elif 2 == 2:
-    del a
+    pass
 else:
-    del a
+    pass
 
 for a in [1, 2]:  # Check 6
-    del a
+    pass
 else:
-    del a
+    pass
 
 while True:  # Check 7
-    del a
+    pass
 else:
-    del a
+    pass
 
 try: # Check 8
-    del a
+    pass
 except Exception:
-    del a
+    pass

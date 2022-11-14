@@ -5,15 +5,7 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from click import (
-    Argument,
-    CommandCollection,
-    Context,
-    argument,
-    get_text_stream,
-    group,
-    option,
-)
+from click import Argument, Context, argument, get_text_stream, group, option
 
 
 @group()
@@ -51,7 +43,7 @@ def assert_error_count(errors: str, directory: str) -> None:
         raise Exception("Directory expected")
 
     for file in directory.rglob("*.py"):
-        if not (match := re.match(r"([a-z\s]+)\-(\d+)", file.stem)):
+        if not (match := re.match(r"([a-z_]+)\-(\d+)", file.stem)):
             raise Exception(f"Invalid file name format for {file.name}")
 
         error_count += int(match.groups()[1])
@@ -65,6 +57,6 @@ def assert_error_count(errors: str, directory: str) -> None:
 
 if __name__ == "__main__":
     try:
-        CommandCollection(sources=[main])()
+        main()
     except Exception as e:
         sys.exit(f"ERROR: {str(e)}")

@@ -5,14 +5,14 @@ for a in range(10):  # Check 2
 
 for a in range(10):  # Check 3
     """
-    Multiline comment before statement is ok
+    Lorem ipsum dolor sit amet
     """
     break
 
 for a in range(10):  # Check 4
     a = 1
 
-    # Comment before statement
+    # Lorem ipsum dolor sit amet
     break
 
 for a in range(10):  # Check 5

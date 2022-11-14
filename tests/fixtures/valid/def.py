@@ -1,50 +1,46 @@
-if 1 == 1:  # Check 1
+def a():  # Check 1
     pass
 
-if 1 == 1:  # Check 2
+def a():  # Check 2
     pass
 
 """
 Lorem ipsum dolor sit amet
 """
-if 1 == 1:  # Check 3
+def a():  # Check 3
     pass
 
 # Lorem ipsum dolor sit amet
-if 1 == 1:  # Check 4
+def a():  # Check 4
     pass
 
 if 1 == 1:  # Check 5
-    if 2 == 2:
+    def a():
         pass
 elif 2 == 2:
-    if 1 == 1:
+    def a():
         pass
 else:
-    if 1 == 1:
+    def a():
         pass
 
 for a in [1, 2]:  # Check 6
-    if 1 == 1:
+    def a():
         pass
 else:
-    if 1 == 1:
+    def a():
         pass
 
 while True:  # Check 7
-    if 1 == 1:
+    def a():
         pass
 else:
-    if 1 == 1:
+    def a():
         pass
 
 try: # Check 8
-    if 1 == 1:
+    def a():
         pass
 except Exception:
-    if 1 == 1:
+    def a():
         pass
-
-# Inline if/else should not be affected
-b = 1
-a = 1 if b == 2 else 0

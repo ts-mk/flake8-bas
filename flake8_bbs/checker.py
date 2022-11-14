@@ -8,7 +8,7 @@ import pkg_resources
 
 class Statement(NamedTuple):
     """
-    Python statement definition
+    Python's statement data
     """
 
     keyword: str
@@ -20,7 +20,7 @@ class Statement(NamedTuple):
 
 class Error(NamedTuple):
     """
-    Error item
+    Error item data
     """
 
     lineno: int
@@ -74,7 +74,7 @@ SIMPLE_STATEMENTS = (
         (3, 5),
     ),
     Statement(
-        "import from",
+        "from import",
         ast.ImportFrom,
         f"{ERROR_NAMESPACE}107",
         f"{ERROR_NAMESPACE}207",
@@ -238,21 +238,65 @@ class StatementChecker:
         """
         cls.options = options
 
-    def _node_invalid(self, node: ast.AST) -> Optional[str]:
+    @classmethod
+    def _real_node_class(cls, node: ast.AST) -> type:
+        """
+        Returns "real" class of a node - some nodes might be wrapped in other nodes
+        while for instance comparison we need to determine the inner node's class.
+
+        :param node: AST node
+        :return: AST node class
+        """
+        if isinstance(node, ast.Expr) and isinstance(
+            getattr(node, "value", None), (ast.Yield, ast.YieldFrom)
+        ):
+            return node.value.__class__
+        else:
+            return node.__class__
+
+    def _node_error(
+        self, node: ast.AST, on_behalf_of: Optional[ast.AST] = None
+    ) -> Optional[str]:
         """
         Checks whether the node is valid or not.
 
         :param node: AST node
+        :param on_behalf_of: original node to be evaluated
         :return: error code
         """
+        on_behalf_of = on_behalf_of or node
+        parent_node = getattr(node, "parent_node", None)
         previous_node = getattr(node, "previous_node", None)
 
-        if not isinstance(node, tuple(self.statement_map.keys())):
+        # Non-statement objects should be dismissed
+        if not isinstance(on_behalf_of, tuple(self.statement_map.keys())):
             return
 
-        if node.lineno == 1:
+        # First line of code could be dismissed
+        if getattr(node, "lineno", None) == 1:
             return
 
+        # `yield (from)` is a bit of an oddball - it's always "wrapped in" ast.Expr
+        # so we need to check that instead
+        if (
+            parent_node
+            and isinstance(node, (ast.Yield, ast.YieldFrom))
+            and isinstance(parent_node, ast.Expr)
+            and getattr(parent_node, "value", None) is node
+        ):
+            return self._node_error(node=parent_node, on_behalf_of=on_behalf_of)
+
+        # A (string) constant expression is allowed to be directly above the node
+        # but then it needs to match all the other rules so we need to do
+        # a look behind (or rather above)
+        if (
+            previous_node
+            and isinstance(previous_node, ast.Expr)
+            and isinstance(getattr(previous_node, "value", None), ast.Constant)
+        ):
+            return self._node_error(node=previous_node, on_behalf_of=on_behalf_of)
+
+        # Blank line found above the statement
         if (
             previous_node
             and getattr(previous_node, "end_lineno", None)
@@ -263,17 +307,18 @@ class StatementChecker:
         ):
             return
 
+        # If the node is a first child of a compound statement, it doesn't need
+        # a blank line
         if self._is_first_child(node):
             return
 
-        if previous_node and isinstance(previous_node, ast.Expr):
-            return
-
-        # All valida conditions exhausted so return an error
-        if previous_node and isinstance(node, previous_node.__class__):
-            return self.statement_map[node.__class__].sibling_error_code
+        # All valid conditions exhausted so return an error
+        if previous_node and isinstance(
+            on_behalf_of, self._real_node_class(previous_node)
+        ):
+            return self.statement_map[on_behalf_of.__class__].sibling_error_code
         else:
-            return self.statement_map[node.__class__].error_code
+            return self.statement_map[on_behalf_of.__class__].error_code
 
     @classmethod
     def _is_first_child(cls, node: ast.AST) -> bool:
@@ -321,7 +366,7 @@ class StatementChecker:
         for node in ast.walk(self.tree):
             self._prepare_node(node=node, previous_node=previous_node)
 
-            if error_code := self._node_invalid(node=node):
+            if error_code := self._node_error(node=node):
                 yield Error(
                     node.lineno,
                     node.col_offset,

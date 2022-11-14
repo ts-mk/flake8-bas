@@ -3,11 +3,11 @@ assert 1 == 1  # Check 1
 assert 1 == 1  # Check 2
 
 """
-Multiline comment before statement is ok
+Lorem ipsum dolor sit amet
 """
 assert 1 == 1  # Check 3
 
-# Comment before statement
+# Lorem ipsum dolor sit amet
 assert 1 == 1  # Check 4
 
 if 1 == 1:  # Check 5
@@ -22,7 +22,7 @@ for a in [1, 2]:  # Check 6
 else:
     assert 1 == 1
 
-while 1 < 2:  # Check 7
+while True:  # Check 7
     assert 1 == 1
 else:
     assert 1 == 1

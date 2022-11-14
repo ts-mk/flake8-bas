@@ -1,50 +1,46 @@
-if 1 == 1:  # Check 1
+while True:  # Check 1
     pass
 
-if 1 == 1:  # Check 2
+while True:  # Check 2
     pass
 
 """
 Lorem ipsum dolor sit amet
 """
-if 1 == 1:  # Check 3
+while True:  # Check 3
     pass
 
 # Lorem ipsum dolor sit amet
-if 1 == 1:  # Check 4
+while True:  # Check 4
     pass
 
 if 1 == 1:  # Check 5
-    if 2 == 2:
+    while True:
         pass
 elif 2 == 2:
-    if 1 == 1:
+    while True:
         pass
 else:
-    if 1 == 1:
+    while True:
         pass
 
-for a in [1, 2]:  # Check 6
-    if 1 == 1:
+while True:  # Check 6
+    while True:
         pass
 else:
-    if 1 == 1:
+    while True:
         pass
 
 while True:  # Check 7
-    if 1 == 1:
+    while True:
         pass
 else:
-    if 1 == 1:
+    while True:
         pass
 
 try: # Check 8
-    if 1 == 1:
+    while True:
         pass
 except Exception:
-    if 1 == 1:
+    while True:
         pass
-
-# Inline if/else should not be affected
-b = 1
-a = 1 if b == 2 else 0

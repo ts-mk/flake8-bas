@@ -1,33 +1,33 @@
-del a  # Check 1
+global a  # Check 1
 
-del a  # Check 2
+global a  # Check 2
 
 """
 Lorem ipsum dolor sit amet
 """
-del a  # Check 3
+global a  # Check 3
 
 # Lorem ipsum dolor sit amet
-del a  # Check 4
+global a  # Check 4
 
 if 1 == 1:  # Check 5
-    del a
+    global a
 elif 2 == 2:
-    del a
+    global a
 else:
-    del a
+    global a
 
 for a in [1, 2]:  # Check 6
-    del a
+    global a
 else:
-    del a
+    global a
 
 while True:  # Check 7
-    del a
+    global a
 else:
-    del a
+    global a
 
 try: # Check 8
-    del a
+    global a
 except Exception:
-    del a
+    global a

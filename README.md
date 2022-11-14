@@ -12,7 +12,7 @@ PEP 8 recommends to use blank lines only to separate logical sections:
 >
 > Use blank lines in functions, sparingly, to indicate logical sections.
 
-However, some people believe that adding blank lines also before (compound) statements and some simple statements improves code readability which is otherwise hindered despite syntax highlighting that modern code editors provide, as demonstrated in the following example:
+However, some people believe that adding blank lines before compound statements (e.g. `if`/`else` block) and some simple statements (e.g. `return`) improves code readability which is otherwise hindered despite syntax highlighting that modern code editors provide, as demonstrated in the following example:
 
 ```python
 a = 1
@@ -44,23 +44,23 @@ The statements are split into different categories based on whether they are [si
 
 ### BBS1xx/BBS2xx: Simple statements
 
-Simple statements, excluding [expression statements](https://docs.python.org/3.11/reference/simple_stmts.html#expression-statements) and [assignment statements](https://docs.python.org/3.11/reference/simple_stmts.html#assignment-statements). "Sibling Error" is used for two or more consecutive statements of the same type, e.g. `del`.
+Simple statements, excluding [expressions](https://docs.python.org/3.11/reference/simple_stmts.html#expression-statements) and [assignments](https://docs.python.org/3.11/reference/simple_stmts.html#assignment-statements) which are technically statements as well. "Sibling Error" is used for two or more consecutive statements of the same type, e.g. `del`.
 
-| Statement     | Error  | Sibling Error |
-|:--------------|:-------|:--------------|
-| `assert`      | BBS101 | BBS201        |
-| `break`       | BBS102 | BBS202        |
-| `continue`    | BBS103 | BBS203        |
-| `del`         | BBS104 | BBS204        |
-| `global`      | BBS105 | BBS205        |
-| `import`      | BBS106 | BBS206        |
-| `import from` | BBS107 | BBS207        |
-| `nonlocal`    | BBS108 | BBS208        |
-| `pass`        | BBS109 | BBS209        |
-| `raise`       | BBS110 | BBS210        |
-| `return`      | BBS111 | BBS211        |
-| `yield`       | BBS112 | BBS212        |
-| `yield from`  | BBS113 | BBS213        |
+| Statement         | Error  | Sibling Error |
+|:------------------|:-------|:--------------|
+| `assert`          | BBS101 | BBS201        |
+| `break`           | BBS102 | BBS202        |
+| `continue`        | BBS103 | BBS203        |
+| `del`             | BBS104 | BBS204        |
+| `global`          | BBS105 | BBS205        |
+| `import`          | BBS106 | BBS206        |
+| `from import`     | BBS107 | BBS207        |
+| `nonlocal`        | BBS108 | BBS208        |
+| `pass`            | BBS109 | BBS209        |
+| `raise`           | BBS110 | BBS210        |
+| `return`          | BBS111 | BBS211        |
+| `yield`           | BBS112 | BBS212        |
+| `yield from`      | BBS113 | BBS213        |
 
 **Note:** Some of these errors shouldn't occur (e.g. `return` followed by another `return`) because having consecutive siblings of those types does not make sense, but the plugin would raise these errors anyway.
 
