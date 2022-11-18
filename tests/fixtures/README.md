@@ -6,10 +6,10 @@
 2. Blank line before statement.
 3. Constant expression before statement.
 4. Lorem ipsum dolor sit amet as long as there is a blank line above the comment.
-5. First statement with an if/elif/else statement.
-6. First statement with a for/else statement.
-7. First statement with a while/else statement.
-8. First statement within a try/except statement.
+5. First and last statement with an if/elif/else statement.
+6. First and last statement with a for/else statement.
+7. First and last statement with a while/else statement.
+8. First and last statement within a try/except statement.
 
 ## Invalid statements
 

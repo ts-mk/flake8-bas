@@ -1,46 +1,73 @@
-def a():  # Check 1
+def f():  # Check 1
     pass
 
-def a():  # Check 2
+def f():  # Check 2
     pass
 
 """
 Lorem ipsum dolor sit amet
 """
-def a():  # Check 3
+def f():  # Check 3
     pass
 
 # Lorem ipsum dolor sit amet
-def a():  # Check 4
+def f():  # Check 4
     pass
 
 if 1 == 1:  # Check 5
-    def a():
-        pass
-elif 2 == 2:
-    def a():
-        pass
-else:
-    def a():
+    def f():
         pass
 
-for a in [1, 2]:  # Check 6
-    def a():
+    def f():
+        pass
+elif 2 == 2:
+    def f():
+        pass
+
+    def f():
         pass
 else:
-    def a():
+    def f():
+        pass
+
+    def f():
+        pass
+
+for i in [1, 2]:  # Check 6
+    def f():
+        pass
+
+    def f():
+        pass
+else:
+    def f():
+        pass
+
+    def f():
         pass
 
 while True:  # Check 7
-    def a():
+    def f():
+        pass
+
+    def f():
         pass
 else:
-    def a():
+    def f():
+        pass
+
+    def f():
         pass
 
 try: # Check 8
-    def a():
+    def f():
+        pass
+
+    def f():
         pass
 except Exception:
-    def a():
+    def f():
+        pass
+
+    def f():
         pass

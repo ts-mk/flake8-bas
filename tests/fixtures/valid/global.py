@@ -12,22 +12,40 @@ global a  # Check 4
 
 if 1 == 1:  # Check 5
     global a
+
+    global a
 elif 2 == 2:
+    global a
+
     global a
 else:
     global a
 
-for a in [1, 2]:  # Check 6
+    global a
+
+for i in [1, 2]:  # Check 6
+    global a
+
     global a
 else:
+    global a
+
     global a
 
 while True:  # Check 7
     global a
+
+    global a
 else:
+    global a
+
     global a
 
 try: # Check 8
     global a
+
+    global a
 except Exception:
+    global a
+
     global a

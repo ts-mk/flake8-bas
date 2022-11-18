@@ -11,7 +11,7 @@ from _pytest.fixtures import SubRequest
 from flake8_bas.checker import STATEMENTS, Statement, StatementChecker
 
 
-@dataclass
+@dataclass(frozen=True)
 class StatementTest:
     file: Path
     checker: StatementChecker

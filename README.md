@@ -10,7 +10,7 @@ PEP 8 recommends to use blank lines only to separate logical sections:
 
 > Extra blank lines may be used (sparingly) to separate groups of related functions. Blank lines may be omitted between
 > a bunch of related one-liners (e.g. a set of dummy implementations).
-> 
+>
 > Use blank lines in functions, sparingly, to indicate logical sections.
 
 However, some people believe that adding blank lines before compound statements (e.g. `if`/`else` block) and some simple
@@ -45,9 +45,9 @@ Until version 1.0.0 is reached, this plugin is considered as **NOT ready for pro
 ## Statements and their error codes
 
 The statements are split into different categories based on whether they are
-[simple statements](https://docs.python.org/3.11/reference/simple_stmts.html) or 
+[simple statements](https://docs.python.org/3.11/reference/simple_stmts.html) or
 [compound statements](https://docs.python.org/3.11/reference/compound_stmts.html), and whether the error occurs between
-two statements of the same type or not. This allows you to filter entire groups using `BAS` and the first digit, 
+two statements of the same type or not. This allows you to filter entire groups using `BAS` and the first digit,
 e.g. `BAS2`.
 
 **Error types:**

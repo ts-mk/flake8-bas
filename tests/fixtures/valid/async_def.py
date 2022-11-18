@@ -1,46 +1,73 @@
-async def a():  # Check 1
+async def f():  # Check 1
     pass
 
-async def a():  # Check 2
+async def f():  # Check 2
     pass
 
 """
 Lorem ipsum dolor sit amet
 """
-async def a():  # Check 3
+async def f():  # Check 3
     pass
 
 # Lorem ipsum dolor sit amet
-async def a():  # Check 4
+async def f():  # Check 4
     pass
 
 if 1 == 1:  # Check 5
-    async def a():
-        pass
-elif 2 == 2:
-    async def a():
-        pass
-else:
-    async def a():
+    async def f():
         pass
 
-for a in [1, 2]:  # Check 6
-    async def a():
+    async def f():
+        pass
+elif 2 == 2:
+    async def f():
+        pass
+
+    async def f():
         pass
 else:
-    async def a():
+    async def f():
+        pass
+
+    async def f():
+        pass
+
+for i in [1, 2]:  # Check 6
+    async def f():
+        pass
+
+    async def f():
+        pass
+else:
+    async def f():
+        pass
+
+    async def f():
         pass
 
 while True:  # Check 7
-    async def a():
+    async def f():
+        pass
+
+    async def f():
         pass
 else:
-    async def a():
+    async def f():
+        pass
+
+    async def f():
         pass
 
 try: # Check 8
-    async def a():
+    async def f():
+        pass
+
+    async def f():
         pass
 except Exception:
-    async def a():
+    async def f():
+        pass
+
+    async def f():
         pass

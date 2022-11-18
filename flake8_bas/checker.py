@@ -41,7 +41,7 @@ class StatementErrors:
         return astuple(self)
 
 
-@dataclass
+@dataclass(frozen=True)
 class Statement:
     """
     Python's statement data
@@ -53,7 +53,7 @@ class Statement:
     python_compatibility: Tuple[int, int]
 
 
-@dataclass
+@dataclass(frozen=True)
 class Error:
     """
     Error item data
@@ -341,13 +341,13 @@ class StatementChecker:
         """
         next_node = self.tree.get(node.index + 1)
 
+        # If the node is the last node in the module, dismiss it
+        if node is self.tree[next(reversed(self.tree))]:
+            return
+
         # If the node is a first child of a compound statement, it doesn't need
         # a blank line
         if self._is_last_child(node):
-            return
-
-        # If the node is the last node in the module, dismiss it
-        if node is list(self.tree.values())[-1]:
             return
 
         # Blank line found below the statement
