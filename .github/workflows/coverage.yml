@@ -1,11 +1,12 @@
 name: Code coverage
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
     paths:
-      - 'flake8_bbs/**'
+      - 'flake8_bas/**'
       - 'src/**'
 
 concurrency:
@@ -16,7 +17,7 @@ env:
   COVERAGE_RESULT: ./coverage.xml
   POETRY_VERSION: '1.1.13'
   PYTHON_VERSION: '3.10'
-  PACKAGE_NAME: 'flake8_bbs'
+  PACKAGE_NAME: 'flake8_bas'
   SELF: coverage.yml
 
 jobs:

@@ -16,7 +16,7 @@ env:
   POETRY_VERSION: '1.1.13'
   # This Python version must match the one in .pre-commit-config.yaml
   PYTHON_VERSION: '3.10'
-  PACKAGE_NAME: 'flake8_bbs'
+  PACKAGE_NAME: 'flake8_bas'
   SELF: tests.yml
   UTILS: ./.github/workflows/utils.py
 
@@ -196,5 +196,5 @@ jobs:
       - name: Run
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
         run: >-
-          poetry run flake8 --isolated --select=BBS ./tests/fixtures
+          poetry run flake8 --isolated --select=BAS ./tests/fixtures
           | poetry run ${{ env.UTILS }} assert-error-count --directory=./tests/fixtures/invalid

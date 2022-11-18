@@ -1,19 +1,21 @@
 import ast
 import re
 import sys
+from dataclasses import dataclass
 from pathlib import Path
-from typing import List, NamedTuple, Optional, Tuple
+from typing import List, Optional
 
 import pytest
 from _pytest.fixtures import SubRequest
 
-from flake8_bbs.checker import STATEMENTS, StatementChecker
+from flake8_bas.checker import STATEMENTS, Statement, StatementChecker
 
 
-class StatementTest(NamedTuple):
+@dataclass
+class StatementTest:
     file: Path
     checker: StatementChecker
-    error_codes: Tuple[str, ...]
+    statement: Statement
     error_count: int
 
 
@@ -32,7 +34,7 @@ def load_files(subdirectory: Optional[str] = "") -> List[Path]:
     """
     output = []
 
-    for file in (TEST_ROOT / "fixtures" / subdirectory).rglob("*.py"):
+    for file in sorted((TEST_ROOT / "fixtures" / subdirectory).rglob("*.py")):
         match = FILE_FORMAT.match(file.stem)
         statement = STATEMENT_MAP[match.groups()[0].replace("_", " ")]
 
@@ -42,7 +44,7 @@ def load_files(subdirectory: Optional[str] = "") -> List[Path]:
     return output
 
 
-def errors_from_file(file: Path) -> Tuple[str, ...]:
+def statement_from_file(file: Path) -> Statement:
     """
     Resolves the package's Flake8 error codes based on the file's name.
 
@@ -51,9 +53,8 @@ def errors_from_file(file: Path) -> Tuple[str, ...]:
     """
     try:
         match = FILE_FORMAT.match(file.stem)
-        statement = STATEMENT_MAP[match.groups()[0].replace("_", " ")]
 
-        return (statement.error_code, statement.sibling_error_code)
+        return STATEMENT_MAP[match.groups()[0].replace("_", " ")]
     except Exception as e:
         raise Exception("Statement not found for the given filename") from e
 
@@ -88,6 +89,6 @@ def statement_test(request: SubRequest) -> StatementTest:
             tree=ast.parse(content),
             lines=[f"{line}\n" for line in content.split("\n")],
         ),
-        errors_from_file(request.param),
+        statement_from_file(request.param),
         error_count_from_file(request.param),
     )

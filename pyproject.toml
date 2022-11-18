@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "flake8-bbs"
+name = "flake8-bas"
 version = "0.1.0-alpha.3"
-description = "Flake8 extension that checks for blank lines before (compound) statements"
+description = "Flake8 extension that checks for blank lines around (compound) statements."
 authors = ["Tomas Mrozek <tm@nohup.run>"]
 maintainers = ["Tomas Mrozek <tm@nohup.run>"]
-repository = "https://github.com/ts-mk/flake8-bbs/"
-documentation = "https://github.com/ts-mk/flake8-bbs/blob/master/README.md"
+repository = "https://github.com/ts-mk/flake8-bas/"
+documentation = "https://github.com/ts-mk/flake8-bas/blob/master/README.md"
 readme = "README.md"
 license = "MIT"
 classifiers = [
@@ -36,7 +36,7 @@ pytest-cov = ">=2.6.0,<3.0.0"
 yappi = ">=1.4.0,<2.0.0"
 
 [tool.poetry.plugins."flake8.extension"]
-BBS = "flake8_bbs:StatementChecker"
+BAS = "flake8_bas:StatementChecker"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
