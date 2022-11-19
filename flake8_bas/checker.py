@@ -20,6 +20,11 @@ class StatementErrors:
     sibling: str
 
     def __init__(self, before: int, after: int, sibling: int) -> None:
+        """
+        :param before: error number for a missing blank line before a statement
+        :param after: error number for a missing blank line after a statement
+        :param sibling: error number for a missing blank between sibling statements
+        """
         self.__dict__["before"] = f"{self.ERROR_NAMESPACE}{before}"
         self.__dict__["after"] = f"{self.ERROR_NAMESPACE}{after}"
         self.__dict__["sibling"] = f"{self.ERROR_NAMESPACE}{sibling}"
@@ -274,6 +279,26 @@ class StatementChecker:
         else:
             return node
 
+    @classmethod
+    def _is_nth_child(cls, node: ast.AST, n: int) -> bool:
+        """
+        Checks if the node is the Nth child within its parent.
+
+        :param node: AST node
+        :param n: index within a list
+        :return: True if it is, otherwise False
+        """
+        if not (parent_node := getattr(node, "parent_node", None)):
+            return False
+
+        if len(getattr(parent_node, "body", [])) and parent_node.body[n] is node:
+            return True
+
+        if len(getattr(parent_node, "orelse", [])) and parent_node.orelse[n] is node:
+            return True
+
+        return False
+
     def _error_before(
         self, node: ast.AST, on_behalf_of: Optional[ast.AST] = None
     ) -> Optional[Error]:
@@ -369,8 +394,8 @@ class StatementChecker:
         keyword = self.statement_map[on_behalf_of.__class__].keyword
 
         return Error(
-            node.end_lineno + 1,
-            node.col_offset,
+            next_node.lineno,
+            next_node.col_offset,
             f'{error_code} missing blank line after "{keyword}" statement',
             type(self),
         )
@@ -396,7 +421,7 @@ class StatementChecker:
         if getattr(node, "lineno", None) == 1:
             return
 
-        # `yield (from)` is a bit of an oddball - it's always "wrapped in" ast.Expr
+        # `yield (from)` is a bit of an oddball - it's always "wrapped" in ast.Expr
         # so we need to check that instead
         if (
             parent_node
@@ -410,26 +435,6 @@ class StatementChecker:
             return error
         elif error := self._error_after(node=node, on_behalf_of=on_behalf_of):
             return error
-
-    @classmethod
-    def _is_nth_child(cls, node: ast.AST, n: int) -> bool:
-        """
-        Checks if the node is the Nth child within its parent.
-
-        :param node: AST node
-        :param n: index within a list
-        :return: True if it is, otherwise False
-        """
-        if not (parent_node := getattr(node, "parent_node", None)):
-            return False
-
-        if len(getattr(parent_node, "body", [])) and parent_node.body[n] is node:
-            return True
-
-        if len(getattr(parent_node, "orelse", [])) and parent_node.orelse[n] is node:
-            return True
-
-        return False
 
     def run(self) -> Generator[tuple, None, None]:
         """
