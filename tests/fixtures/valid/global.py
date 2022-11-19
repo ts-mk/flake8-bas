@@ -1,51 +1,51 @@
-global a  # Check 1
+global v  # Check 1
 
-global a  # Check 2
+global v  # Check 2
 
 """
 Lorem ipsum dolor sit amet
 """
-global a  # Check 3
+global v  # Check 3
 
 # Lorem ipsum dolor sit amet
-global a  # Check 4
+global v  # Check 4
 
 if 1 == 1:  # Check 5
-    global a
+    global v
 
-    global a
+    global v
 elif 2 == 2:
-    global a
+    global v
 
-    global a
+    global v
 else:
-    global a
+    global v
 
-    global a
+    global v
 
 for i in [1, 2]:  # Check 6
-    global a
+    global v
 
-    global a
+    global v
 else:
-    global a
+    global v
 
-    global a
+    global v
 
 while True:  # Check 7
-    global a
+    global v
 
-    global a
+    global v
 else:
-    global a
+    global v
 
-    global a
+    global v
 
 try: # Check 8
-    global a
+    global v
 
-    global a
+    global v
 except Exception:
-    global a
+    global v
 
-    global a
+    global v

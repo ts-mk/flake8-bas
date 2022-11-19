@@ -309,7 +309,7 @@ class StatementChecker:
 
         # If the node is a first child of a compound statement, it doesn't need
         # a blank line
-        if self._is_first_child(node):
+        if self._is_nth_child(node=node, n=0):
             return
 
         # All valid conditions exhausted so return an error
@@ -347,7 +347,7 @@ class StatementChecker:
 
         # If the node is a first child of a compound statement, it doesn't need
         # a blank line
-        if self._is_last_child(node):
+        if self._is_nth_child(node=node, n=-1):
             return
 
         # Blank line found below the statement
@@ -412,44 +412,26 @@ class StatementChecker:
             return error
 
     @classmethod
-    def _is_first_child(cls, node: ast.AST) -> bool:
+    def _is_nth_child(cls, node: ast.AST, n: int) -> bool:
         """
-        Checks if the node is the first child within its parent.
+        Checks if the node is the Nth child within its parent.
 
         :param node: AST node
+        :param n: index within a list
         :return: True if it is, otherwise False
         """
         if not (parent_node := getattr(node, "parent_node", None)):
             return False
 
-        if len(getattr(parent_node, "body", [])) and parent_node.body[0] is node:
+        if len(getattr(parent_node, "body", [])) and parent_node.body[n] is node:
             return True
 
-        if len(getattr(parent_node, "orelse", [])) and parent_node.orelse[0] is node:
-            return True
-
-        return False
-
-    @classmethod
-    def _is_last_child(cls, node: ast.AST) -> bool:
-        """
-        Checks if the node is the last child within its parent.
-
-        :param node: AST node
-        :return: True if it is, otherwise False
-        """
-        if not (parent_node := getattr(node, "parent_node", None)):
-            return False
-
-        if len(getattr(parent_node, "body", [])) and parent_node.body[-1] is node:
-            return True
-
-        if len(getattr(parent_node, "orelse", [])) and parent_node.orelse[-1] is node:
+        if len(getattr(parent_node, "orelse", [])) and parent_node.orelse[n] is node:
             return True
 
         return False
 
-    def run(self) -> Generator[Error, None, None]:
+    def run(self) -> Generator[tuple, None, None]:
         """
         Searches the abstract syntax tree of a module and yields an error for each
         invalid statement.
@@ -458,4 +440,4 @@ class StatementChecker:
         """
         for node in self.tree.values():
             if error := self._node_error(node=node):
-                yield error
+                yield astuple(error)

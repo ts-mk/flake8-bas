@@ -19,11 +19,12 @@ code editors provide, as demonstrated in the following example:
 
 ```python
 a = 1
-b = 2
 if a == 1:
     print(a)
 for n in range(10):
     print(n)
+else:
+    print(a)
 del a
 ```
 
