@@ -19,7 +19,7 @@ class StatementTest:
     error_count: int
 
 
-FILE_FORMAT = re.compile(r"([a-z_]+)\-?(\d*)")
+FILE_FORMAT = re.compile(r"([a-z_]+)-?(\d*)")
 STATEMENT_MAP = {s.keyword: s for s in STATEMENTS}
 TEST_ROOT = Path(__file__).parent
 

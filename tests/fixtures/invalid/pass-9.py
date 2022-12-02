@@ -1,14 +1,14 @@
-a = 1  # Check 1
+v = 1  # Check 1
 pass
 
 pass  # Check 2
 pass
 
-a = 1  # Check 3
+v = 1  # Check 3
 # Lorem ipsum dolor sit amet
 pass
 
-a = 1  # Check 4
+v = 1  # Check 4
 """
 Lorem ipsum dolor sit amet
 """
@@ -19,13 +19,16 @@ Multiline string assignment
 """
 pass  # Check 5
 
-for a in [1, 2]:  # Check 6
-    a = 1
+for i in [1, 2]:  # Check 6
+    v = 1
     pass
 
-for a in [1, 2]:  # Check 7
+for i in [1, 2]:  # Check 7
     pass
     pass
 
 print(1)  # Check 8
 pass
+
+pass  # Check 8
+print(1)

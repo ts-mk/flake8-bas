@@ -1,4 +1,4 @@
-a = 1  # Check 1
+v = 1  # Check 1
 while True:
     pass
 
@@ -7,12 +7,12 @@ while True:  # Check 2
 while True:
     pass
 
-a = 1  # Check 3
+v = 1  # Check 3
 # Lorem ipsum dolor sit amet
 while True:
     pass
 
-a = 1  # Check 4
+v = 1  # Check 4
 """
 Lorem ipsum dolor sit amet
 """
@@ -27,7 +27,7 @@ while True:
     pass
 
 while True:  # Check 6
-    a = 1
+    v = 1
     while True:
         pass
 
@@ -40,3 +40,7 @@ while True:  # Check 7
 print(1)  # Check 8
 while True:
     pass
+
+while True:  # Check 9
+    pass
+print(1)

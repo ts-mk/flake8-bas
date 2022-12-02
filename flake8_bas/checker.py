@@ -2,7 +2,7 @@ import ast
 import re
 from collections import OrderedDict
 from dataclasses import dataclass, astuple
-from typing import Generator, List, Optional, Tuple
+from typing import Generator, List, Optional, NamedTuple
 
 import pkg_resources
 
@@ -10,7 +10,7 @@ import pkg_resources
 @dataclass(init=False, frozen=True)
 class StatementErrors:
     """
-    Statement's error codes
+    Statement's error codes.
     """
 
     ERROR_NAMESPACE = "BAS"
@@ -49,19 +49,18 @@ class StatementErrors:
 @dataclass(frozen=True)
 class Statement:
     """
-    Python's statement data
+    Python's statement data.
     """
 
     keyword: str
     cls: type
     errors: StatementErrors
-    python_compatibility: Tuple[int, int]
+    python_compatibility: tuple[int, int]
 
 
-@dataclass(frozen=True)
-class Error:
+class Error(NamedTuple):
     """
-    Error item data
+    Describes an error in the form of a tuple that Flake8 expects.
     """
 
     lineno: int
@@ -244,7 +243,8 @@ class StatementChecker:
             if self.BLANK_LINE_RE.match(line)
         ]
 
-    def _indexed_tree(self, module_tree: ast.Module) -> OrderedDict:
+    @classmethod
+    def _indexed_tree(cls, module_tree: ast.Module) -> OrderedDict:
         """
         Takes an AST tree and turns it into an ordered dict with each node having
         an index number.
@@ -299,9 +299,7 @@ class StatementChecker:
 
         return False
 
-    def _error_before(
-        self, node: ast.AST, on_behalf_of: Optional[ast.AST] = None
-    ) -> Optional[Error]:
+    def _error_before(self, node: ast.AST, on_behalf_of: ast.AST) -> Optional[Error]:
         """
         Checks for an error before the statement.
 
@@ -309,7 +307,7 @@ class StatementChecker:
         :param on_behalf_of: original node to be evaluated
         :return: error code
         """
-        previous_node = self.tree.get(node.index - 1)
+        previous_node: ast.AST = self.tree.get(node.index - 1)
 
         # A (string) constant expression is allowed to be directly above the node
         # but then it needs to match all the other rules so we need to do
@@ -354,9 +352,7 @@ class StatementChecker:
             type(self),
         )
 
-    def _error_after(
-        self, node: ast.AST, on_behalf_of: Optional[ast.AST] = None
-    ) -> Optional[Error]:
+    def _error_after(self, node: ast.AST, on_behalf_of: ast.AST) -> Optional[Error]:
         """
         Checks for an error after the statement.
 
@@ -436,7 +432,7 @@ class StatementChecker:
         elif error := self._error_after(node=node, on_behalf_of=on_behalf_of):
             return error
 
-    def run(self) -> Generator[tuple, None, None]:
+    def run(self) -> Generator[Error, None, None]:
         """
         Searches the abstract syntax tree of a module and yields an error for each
         invalid statement.
@@ -445,4 +441,4 @@ class StatementChecker:
         """
         for node in self.tree.values():
             if error := self._node_error(node=node):
-                yield astuple(error)
+                yield error

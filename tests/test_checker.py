@@ -32,7 +32,7 @@ def test_invalid_statements(statement_test):
 
     assert len(result) == statement_test.error_count, (
         f"{statement_test.file.name}: {len(result)} errors detected while "
-        f"{statement_test.error_count} errors were expected"
+        f"{statement_test.error_count} errors were expected."
     )
 
     for item in result:
@@ -42,7 +42,7 @@ def test_invalid_statements(statement_test):
             f"Error code \"{re.match('([^ ]+)', item.message).groups()[0]}\" "
             f"detected while "
             f"\"{' or '.join(statement_test.statement.errors.to_tuple())}\" "
-            f"were expected"
+            f"were expected."
         )
 
         assert f'"{statement_test.statement.keyword}"' in item.message
@@ -52,7 +52,7 @@ def test_invalid_statements(statement_test):
             0
             < len([1 for r in result if re.match(f"{error_code} ", r.message)])
             < len(result)
-        ), f"Number of {error_code} errors is supposed to be >0 and <{len(result)}"
+        ), f"Number of {error_code} errors is supposed to be >0 and <{len(result)}."
 
 
 def test_error_uniqueness():
@@ -61,8 +61,8 @@ def test_error_uniqueness():
     """
     assert (len(set(e for s in STATEMENTS for e in s.errors.to_tuple()))) == len(
         STATEMENTS
-    ) * len(STATEMENTS[0].errors), "Non-unique error code detected"
+    ) * len(STATEMENTS[0].errors), "Non-unique error code detected."
 
     assert (len(set(s.keyword for s in STATEMENTS))) == len(
         STATEMENTS
-    ), "Non-unique statement keyword detected"
+    ), "Non-unique statement keyword detected."

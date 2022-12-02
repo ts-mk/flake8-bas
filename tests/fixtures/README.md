@@ -21,6 +21,7 @@
 6. No blank line between 2 statements of a different type within a compound statement.
 7. No blank line between 2 statements of the same type within a compound statement.
 8. Statement following a non-constant expression.
+9. No blank line after statement.
 
 NOTES:
 
