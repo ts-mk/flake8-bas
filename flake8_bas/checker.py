@@ -2,7 +2,7 @@ import ast
 import re
 from collections import OrderedDict
 from dataclasses import dataclass, astuple
-from typing import Generator, List, Optional, NamedTuple
+from typing import Generator, List, Optional, NamedTuple, Tuple
 
 import pkg_resources
 
@@ -55,7 +55,7 @@ class Statement:
     keyword: str
     cls: type
     errors: StatementErrors
-    python_compatibility: tuple[int, int]
+    python_compatibility: Tuple[int, int]
 
 
 class Error(NamedTuple):
