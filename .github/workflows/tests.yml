@@ -196,5 +196,5 @@ jobs:
       - name: Run
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
         run: >-
-          poetry run flake8 --isolated --select=BAS ./tests/fixtures
+          poetry run flake8 --isolated --select=BAS ./tests/fixtures/*/*
           | poetry run ${{ env.UTILS }} assert-error-count --directory=./tests/fixtures/invalid
