@@ -13,19 +13,18 @@ PEP 8 recommends to use blank lines only to separate logical sections:
 >
 > Use blank lines in functions, sparingly, to indicate logical sections.
 
-However, some people believe that adding blank lines before compound statements (e.g. `if`/`else` block) and some simple
-statements (e.g. `return`) improves code readability which is otherwise hindered despite syntax highlighting that modern
-code editors provide, as demonstrated in the following example:
+However, adding blank lines before and after compound statements (e.g. `if`/`else` block) as well as some simple
+statements (e.g. `return`) might improve code readability which is otherwise hindered despite syntax highlighting that
+modern code editors provide, as demonstrated in the following example where it might not be immediately apparent that
+this is not one `if/else` statement but an `if` statement followed by a `for/else` statement:
 
 ```python
-a = 1
-if a == 1:
-    print(a)
-for n in range(10):
+if 1 == 1:
+    print(1)
+for n in [1, 2]:
     print(n)
 else:
-    print(a)
-del a
+    print(3)
 ```
 
 This Flake8 plugin therefore checks for a blank line before/after each statement as long as it's **not the first/last
@@ -103,9 +102,30 @@ siblings of those types does not make sense, but the plugin would raise these er
 | `with`       | BAS511       | BAS611      | BAS711        |
 
 
+## Overlapping errors
+
+The extension produces overlapping errors, that is two statements of different types following each other, would produce
+one "before" error and one "after" error pointing to the same line of code:
+
+```python
+a = 1
+
+global a
+del a
+```
+
+This would result in two errors for line 4:
+
+```text
+./file.py:4:1: BAS205 missing blank line after "global" statement
+./file.py:4:1: BAS104 missing blank line before "del" statement
+```
+
+However, two statements of the same type would produce only one "sibling" error.
+
 ## Configuration
 
-The plugin checks for a blank line before **every statement**. There are no custom configuration options. Instead, you
+The plugin checks for blank lines around **every statement**. There are no custom configuration options. Instead, you
 could simply ignore some errors. This system has benefits as well as drawbacks.
 
 The benefit is that you could take advantage of Flake8's `ignore` and `per-file-ignores` (flake8>=3.7.0) config options
@@ -121,7 +141,7 @@ per-file-ignores =
 
 The drawback is that there are no sane defaults and you would inevitably need to exclude some errors, either because
 they make little sense or because the same/conflicting checks might already be applied by another plugin (e.g. checks by
-[flake8-import-order](https://github.com/PyCQA/flake8-import-order)) or should be handled by other formatting tools
+[flake8-import-order](https://github.com/PyCQA/flake8-import-order)) or should be handled by other (formatting) tools
 (e.g. [black](https://github.com/psf/black)).
 
 ### Recommended exclusions

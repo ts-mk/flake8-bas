@@ -1,4 +1,5 @@
 import re
+from pathlib import Path
 
 import pytest
 
@@ -53,6 +54,19 @@ def test_invalid_statements(statement_test):
             < len([1 for r in result if re.match(f"{error_code} ", r.message)])
             < len(result)
         ), f"Number of {error_code} errors is supposed to be >0 and <{len(result)}."
+
+
+def test_overlapping_errors(checker):
+    """
+    Tests that two consecutive statements result in overlapping errors, that is
+    that both errors point to the same line of code.
+    """
+    result = list(
+        checker(Path(__file__).parent / "fixtures/overlapping_errors.py").run()
+    )
+
+    assert len(result) == 2
+    assert result[0].lineno == result[1].lineno
 
 
 def test_error_uniqueness():

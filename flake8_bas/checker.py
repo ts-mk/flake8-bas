@@ -380,9 +380,7 @@ class StatementChecker:
 
         # If the next node is a statement, then we could dismiss it
         # because the next item would raise an error itself
-        if next_node and isinstance(
-            self._real_node(next_node), tuple(self.statement_map.keys())
-        ):
+        if next_node and isinstance(self._real_node(next_node), on_behalf_of.__class__):
             return
 
         # All valid conditions exhausted so return an error

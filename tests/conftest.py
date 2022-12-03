@@ -3,7 +3,7 @@ import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional
+from typing import Callable, List, Optional
 
 import pytest
 from _pytest.fixtures import SubRequest
@@ -75,20 +75,34 @@ def error_count_from_file(file: Path) -> int:
 
 
 @pytest.fixture()
-def statement_test(request: SubRequest) -> StatementTest:
+def checker() -> Callable:
+    """
+    Returns a function that would create a StatementChecker instance for the given file.
+
+    :return: function
+    """
+
+    def _(file: Path) -> StatementChecker:
+        content = file.read_text()
+
+        return StatementChecker(
+            tree=ast.parse(content),
+            lines=[f"{line}\n" for line in content.split("\n")],
+        )
+
+    return _
+
+
+@pytest.fixture()
+def statement_test(request: SubRequest, checker: Callable) -> StatementTest:
     """
     Returns a StatementTest for the given file.
 
     :return: function
     """
-    content = request.param.read_text()
-
     return StatementTest(
         request.param,
-        StatementChecker(
-            tree=ast.parse(content),
-            lines=[f"{line}\n" for line in content.split("\n")],
-        ),
+        checker(file=request.param),
         statement_from_file(request.param),
         error_count_from_file(request.param),
     )
