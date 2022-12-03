@@ -189,8 +189,8 @@ jobs:
       - name: Package installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
         run: |
+          poetry add --lock "flake8==${{ matrix.flake8 }}" "click>=8.1.0,<9.0.0"
           poetry install --no-dev
-          poetry add "flake8==${{ matrix.flake8 }}" "click>=8.1.0,<9.0.0"
           echo -e "\nFlake8 version: $(poetry run flake8 --version)"
 
       - name: Run
