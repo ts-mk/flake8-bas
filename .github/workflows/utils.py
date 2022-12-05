@@ -33,7 +33,10 @@ def stdin(ctx: Context, param: Argument, value: Optional[str] = None) -> Optiona
 )
 @argument("errors", callback=stdin, required=False)
 @option("--directory", required=True, help="Directory path")
-def assert_error_count(errors: str, directory: str) -> None:
+@option("--exclude", required=False, help="Exclude pattern")
+def assert_error_count(
+    errors: str, directory: str, exclude: Optional[str] = None
+) -> None:
     errors = errors or ""
     directory = Path(directory)
     input_error_count = len(errors.split("\n"))
@@ -43,6 +46,9 @@ def assert_error_count(errors: str, directory: str) -> None:
         raise Exception("Directory expected")
 
     for file in directory.rglob("*.py"):
+        if exclude and re.search(exclude, str(file)):
+            continue
+
         if not (match := re.match(r"([a-z_]+)\-(\d+)", file.stem)):
             raise Exception(f"Invalid file name format for {file.name}")
 

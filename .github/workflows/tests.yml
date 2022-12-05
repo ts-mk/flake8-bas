@@ -133,7 +133,7 @@ jobs:
       fail-fast: false
       matrix:
         python: ['3.8', '3.9', '3.10', '3.11']
-        flake8: ['3.8.0', '3.9.0', '4.0.0', '5.0.0']
+        flake8: ['3.8.0', '4.0.0', '5.0.0']
     steps:
       - name: Dump workflow context
         uses: crazy-max/ghaction-dump-context@v1
@@ -193,8 +193,18 @@ jobs:
           poetry install --no-dev
           echo -e "\nFlake8 version: $(poetry run flake8 --version)"
 
-      - name: Run
-        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+      - name: Run (Python <3.10)
+        if: >-
+          (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch') &&
+          (python == '3.8' || python == '3.9')
         run: >-
-          poetry run flake8 --isolated --select=BAS ./tests/fixtures/*/*
-          | poetry run ${{ env.UTILS }} assert-error-count --directory=./tests/fixtures/invalid
+          poetry run flake8 --isolated --select=BAS --exclude=*match*.py ./tests/fixtures/*/* |
+          poetry run ${{ env.UTILS }} assert-error-count --directory=./tests/fixtures/invalid --exclude='.*match.*'
+
+      - name: Run (Python >=3.10)
+        if: >-
+          (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch') &&
+          python != '3.8' && python != '3.9'
+        run: >-
+          poetry run flake8 --isolated --select=BAS ./tests/fixtures/*/* |
+          poetry run ${{ env.UTILS }} assert-error-count --directory=./tests/fixtures/invalid

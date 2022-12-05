@@ -3,7 +3,7 @@ import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, List, Optional
+from typing import Any, Callable, List, Optional
 
 import pytest
 from _pytest.fixtures import SubRequest
@@ -18,10 +18,33 @@ class StatementTest:
     statement: Statement
     error_count: int
 
+    def run(self) -> list:
+        """
+        Runs the checker and returns a list of errors (if any).
+
+        :return: errors
+        """
+        return list(self.checker.run())
+
 
 FILE_FORMAT = re.compile(r"([a-z_]+)-?(\d*)")
 STATEMENT_MAP = {s.keyword: s for s in STATEMENTS}
 TEST_ROOT = Path(__file__).parent
+
+
+def parametrized_name(testcase: Any) -> str:
+    """
+    Creates a friendly parameter name used by Pytest in parametrized functions.
+
+    :param testcase: test's parameter
+    :return: string
+    """
+    if isinstance(testcase, Path) and "fixtures" in str(testcase):
+        return FILE_FORMAT.match(testcase.stem).groups()[0].replace("_", " ")
+    elif isinstance(testcase, Statement):
+        return testcase.keyword
+    else:
+        return str(testcase)
 
 
 def load_files(subdirectory: Optional[str] = "") -> List[Path]:

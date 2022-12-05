@@ -39,7 +39,7 @@ line of code within a module** and **not the first/last statement within a compo
 
 ## Use in production
 
-Until version 1.0.0 is reached, this plugin is considered as **NOT ready for production**.
+Until version 1.0.0 is reached, this plugin is considered to be **NOT ready for production**.
 
 
 ## Statements and their error codes
@@ -62,7 +62,7 @@ type.
 Simple statements, excluding
 [expressions](https://docs.python.org/3.11/reference/simple_stmts.html#expression-statements) and
 [assignments](https://docs.python.org/3.11/reference/simple_stmts.html#assignment-statements), which are technically
-statements as well. "Sibling Error" is used for two or more consecutive statements of the same type, e.g. `del`.
+statements as well.
 
 | Statement         | Before Error | After Error | Sibling Error |
 |:------------------|:-------------|:------------|:--------------|
@@ -85,26 +85,24 @@ siblings of those types does not make sense, but the plugin would raise these er
 
 ### BAS5xx/BAS6xx/BAS7xx: Compound statements
 
-"Sibling Error" is used for two or more consecutive statements of the same type, e.g. `for`.
-
 | Statement    | Before Error | After Error | Sibling Error |
 |:-------------|:-------------|:------------|:--------------|
-| `async def`  | BAS501       | BAS601      | BAS701        |
-| `async for`  | BAS502       | BAS602      | BAS702        |
-| `async with` | BAS503       | BAS603      | BAS703        |
-| `class`      | BAS504       | BAS604      | BAS704        |
-| `def`        | BAS505       | BAS605      | BAS705        |
-| `for`        | BAS506       | BAS606      | BAS706        |
-| `if`         | BAS507       | BAS607      | BAS707        |
-| `match`      | BAS508       | BAS608      | BAS708        |
-| `try`        | BAS509       | BAS609      | BAS709        |
-| `while`      | BAS510       | BAS610      | BAS710        |
-| `with`       | BAS511       | BAS611      | BAS711        |
+| `class`      | BAS501       | BAS601      | BAS701        |
+| `def`        | BAS502       | BAS602      | BAS702        |
+| `async def`  | BAS503       | BAS603      | BAS703        |
+| `for`        | BAS504       | BAS604      | BAS704        |
+| `async for`  | BAS505       | BAS605      | BAS705        |
+| `if`         | BAS506       | BAS606      | BAS706        |
+| `match`      | BAS507       | BAS607      | BAS707        |
+| `try`        | BAS508       | BAS608      | BAS708        |
+| `while`      | BAS509       | BAS609      | BAS709        |
+| `with`       | BAS510       | BAS610      | BAS710        |
+| `async with` | BAS511       | BAS611      | BAS711        |
 
 
 ## Overlapping errors
 
-The extension produces overlapping errors, that is two statements of different types following each other, would produce
+The extension produces overlapping errors, that is two statements of different types following each other would produce
 one "before" error and one "after" error pointing to the same line of code:
 
 ```python
@@ -133,16 +131,16 @@ and have a different behaviour for a different set of files:
 
 ```ini
 [flake8]
-ignore = BAS2
+ignore = BAS3
 per-file-ignores =
-    app/*: BAS101, BAS102, BAS103, BAS104, BAS105, BAS106, BAS107, BAS108, BAS109, BAS110, BAS201, BAS202, BAS203, BAS204, BAS205, BAS206, BAS207, BAS208, BAS209, BA2110, BAS3
-    tests/*: BAS1, BAS2, BAS3
+    app/*: BAS101, BAS102, BAS103, BAS104, BAS105, BAS106, BAS107, BAS108, BAS109, BAS110, BAS201, BAS202, BAS203, BAS204, BAS205, BAS206, BAS207, BAS208, BAS209, BA2110
+    tests/*: BAS1, BAS2
 ```
 
 The drawback is that there are no sane defaults and you would inevitably need to exclude some errors, either because
-they make little sense or because the same/conflicting checks might already be applied by another plugin (e.g. checks by
-[flake8-import-order](https://github.com/PyCQA/flake8-import-order)) or should be handled by other (formatting) tools
-(e.g. [black](https://github.com/psf/black)).
+they are undesirable, make little sense, or the same/conflicting checks might already be applied by another plugin (e.g.
+checks by [flake8-import-order](https://github.com/PyCQA/flake8-import-order)) or should be handled by other
+(formatting) tools (e.g. [black](https://github.com/psf/black)).
 
 ### Recommended exclusions
 

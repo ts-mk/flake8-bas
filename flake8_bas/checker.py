@@ -37,7 +37,7 @@ class StatementErrors:
         """
         return len(self.__dict__)
 
-    def to_tuple(self) -> tuple:
+    def astuple(self) -> Tuple[str, ...]:
         """
         Turns the object into a tuple.
 
@@ -151,68 +151,68 @@ SIMPLE_STATEMENTS = (
 )
 COMPOUND_STATEMENTS = (
     Statement(
-        "async def",
-        ast.AsyncFunctionDef,
-        StatementErrors(501, 601, 701),
-        (3, 5),
-    ),
-    Statement(
-        "async for",
-        ast.AsyncFor,
-        StatementErrors(502, 602, 702),
-        (3, 5),
-    ),
-    Statement(
-        "async with",
-        ast.AsyncWith,
-        StatementErrors(503, 603, 703),
-        (3, 5),
-    ),
-    Statement(
         "class",
         ast.ClassDef,
-        StatementErrors(504, 604, 704),
+        StatementErrors(501, 601, 701),
         (3, 5),
     ),
     Statement(
         "def",
         ast.FunctionDef,
-        StatementErrors(505, 605, 705),
+        StatementErrors(502, 602, 702),
+        (3, 5),
+    ),
+    Statement(
+        "async def",
+        ast.AsyncFunctionDef,
+        StatementErrors(503, 603, 703),
         (3, 5),
     ),
     Statement(
         "for",
         ast.For,
-        StatementErrors(506, 606, 706),
+        StatementErrors(504, 604, 704),
+        (3, 5),
+    ),
+    Statement(
+        "async for",
+        ast.AsyncFor,
+        StatementErrors(505, 605, 705),
         (3, 5),
     ),
     Statement(
         "if",
         ast.If,
-        StatementErrors(507, 607, 707),
+        StatementErrors(506, 606, 706),
         (3, 5),
     ),
     Statement(
         "match",
         getattr(ast, "Match", None),
-        StatementErrors(508, 608, 708),
+        StatementErrors(507, 607, 707),
         (3, 10),
     ),
     Statement(
         "try",
         ast.Try,
-        StatementErrors(509, 609, 709),
+        StatementErrors(508, 608, 708),
         (3, 5),
     ),
     Statement(
         "while",
         ast.While,
-        StatementErrors(510, 610, 710),
+        StatementErrors(509, 609, 709),
         (3, 5),
     ),
     Statement(
         "with",
         ast.With,
+        StatementErrors(510, 610, 710),
+        (3, 5),
+    ),
+    Statement(
+        "async with",
+        ast.AsyncWith,
         StatementErrors(511, 611, 711),
         (3, 5),
     ),
@@ -378,8 +378,8 @@ class StatementChecker:
         ):
             return
 
-        # If the next node is a statement, then we could dismiss it
-        # because the next item would raise an error itself
+        # If the next node is a statement of the same type, then we could dismiss it
+        # because the next item would raise a sibling error itself
         if next_node and isinstance(self._real_node(next_node), on_behalf_of.__class__):
             return
 
