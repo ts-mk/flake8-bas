@@ -196,7 +196,7 @@ jobs:
       - name: Run (Python <3.10)
         if: >-
           (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch') &&
-          (python == '3.8' || python == '3.9')
+          (matrix.python == '3.8' || matrix.python == '3.9')
         run: >-
           poetry run flake8 --isolated --select=BAS --exclude=*match*.py ./tests/fixtures/*/* |
           poetry run ${{ env.UTILS }} assert-error-count --directory=./tests/fixtures/invalid --exclude='.*match.*'
@@ -204,7 +204,7 @@ jobs:
       - name: Run (Python >=3.10)
         if: >-
           (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch') &&
-          python != '3.8' && python != '3.9'
+          matrix.python != '3.8' && matrix.python != '3.9'
         run: >-
           poetry run flake8 --isolated --select=BAS ./tests/fixtures/*/* |
           poetry run ${{ env.UTILS }} assert-error-count --directory=./tests/fixtures/invalid
