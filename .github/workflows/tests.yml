@@ -137,8 +137,8 @@ jobs:
 
       - name: Add coverage into job's summary
         run: >-
-          poetry run ${{ env.UTILS }} coverage_summary
-          --coverage_file="${{ env.GITHUB_WORKSPACE }}/${{ env.COVERAGE_RESULT }}"
+          poetry run ${{ env.UTILS }} coverage-summary
+          --coverage_file="${GITHUB_WORKSPACE}/${{ env.COVERAGE_RESULT }}"
 
   compatibility:
     name: Compatibility tests
