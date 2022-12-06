@@ -103,7 +103,7 @@ def coverage_summary(coverage_file: str) -> None:
         float(ElementTree.parse(coverage_file).getroot().attrib["line-rate"]) * 100
     )
 
-    add_summary(f"**Coverage result:** {coverage}%")
+    add_summary(f"**Coverage:** {coverage}%")
 
 
 if __name__ == "__main__":

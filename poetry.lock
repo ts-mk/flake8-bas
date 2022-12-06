@@ -96,7 +96,7 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "filelock"
-version = "3.8.1"
+version = "3.8.2"
 description = "A platform independent file lock."
 category = "dev"
 optional = false
@@ -317,7 +317,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "virtualenv"
-version = "20.17.0"
+version = "20.17.1"
 description = "Virtual Python Environment builder"
 category = "dev"
 optional = false
