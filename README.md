@@ -42,13 +42,13 @@ line of code within a module** and **not the first/last statement within a compo
 ### Pip
 
 ```bash
-$ pip install flake8-bas
+pip install flake8-bas
 ```
 
 ### Poetry
 
 ```bash
-$ poetry add --dev flake8-bas
+poetry add --dev flake8-bas
 ```
 
 
