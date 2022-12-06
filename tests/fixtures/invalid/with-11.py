@@ -1,46 +1,51 @@
 v = 1  # Check 1
-while True:
+with f() as b:
     pass
 
-while True:  # Check 2
+with f() as b:  # Check 2
     pass
-while True:
+with f() as b:
     pass
 
 v = 1  # Check 3
 # Lorem ipsum dolor sit amet
-while True:
+with f() as b:
     pass
 
 v = 1  # Check 4
 """
 Lorem ipsum dolor sit amet
 """
-while True:
+with f() as b:
     pass
 
 # Check 5
 a = """
 Multiline string assignment
 """
-while True:
+with f() as b:
     pass
 
-while True:  # Check 6
+with f() as b:  # Check 6
     v = 1
-    while True:
+    with f() as b:
         pass
 
-while True:  # Check 7
-    while True:
+with f() as b:  # Check 7
+    with f() as b:
         pass
-    while True:
+    with f() as b:
         pass
 
 print(1)  # Check 8
-while True:
+with f() as b:
     pass
 
-while True:  # Check 9
+with f() as b:  # Check 9
+    pass
+print(1)
+
+print(1)  # Check 10
+with f() as b:
     pass
 print(1)

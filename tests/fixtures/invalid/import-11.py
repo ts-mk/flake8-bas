@@ -1,34 +1,38 @@
 v = 1  # Check 1
-pass
+import os
 
-pass  # Check 2
-pass
+import os  # Check 2
+import os
 
 v = 1  # Check 3
 # Lorem ipsum dolor sit amet
-pass
+import os
 
 v = 1  # Check 4
 """
 Lorem ipsum dolor sit amet
 """
-pass
+import os
 
 a = """
 Multiline string assignment
 """
-pass  # Check 5
+import os  # Check 5
 
 for i in [1, 2]:  # Check 6
     v = 1
-    pass
+    import os
 
 for i in [1, 2]:  # Check 7
-    pass
-    pass
+    import os
+    import os
 
 print(1)  # Check 8
-pass
+import os
 
-pass  # Check 8
+import os  # Check 9
+print(1)
+
+print(1)  # Check 10
+import os
 print(1)

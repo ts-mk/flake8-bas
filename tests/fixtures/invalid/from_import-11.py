@@ -32,3 +32,8 @@ from os import environ
 
 from os import environ  # Check 9
 print(1)
+
+
+print(1)  # Check 10
+from os import environ
+print(1)

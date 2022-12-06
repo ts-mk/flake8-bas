@@ -65,3 +65,10 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           files: ${{ env.COVERAGE_RESULT }}
+
+      - name: Store the test coverage result
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: ${{ env.COVERAGE_RESULT }}
+          retention-days: 90

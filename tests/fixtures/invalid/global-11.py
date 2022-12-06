@@ -1,34 +1,39 @@
 v = 1  # Check 1
-assert 1 == 1
+global v
 
-assert 1 == 1  # Check 2
-assert 1 == 1
+global v  # Check 2
+global v
 
 v = 1  # Check 3
 # Lorem ipsum dolor sit amet
-assert 1 == 1
+global v
 
 v = 1  # Check 4
 """
 Lorem ipsum dolor sit amet
 """
-assert 1 == 1
+global v
 
+# Check 5
 a = """
 Multiline string assignment
 """
-assert 1 == 1  # Check 5
+global v
 
 for i in [1, 2]:  # Check 6
     v = 1
-    assert 1 == 1
+    global v
 
 for i in [1, 2]:  # Check 7
-    assert 1 == 1
-    assert 1 == 1
+    global v
+    global v
 
 print(1)  # Check 8
-assert 1 == 1
+global v
 
-assert 1 == 1  # Check 9
+global v  # Check 9
+print(1)
+
+print(1)  # Check 10
+global v
 print(1)

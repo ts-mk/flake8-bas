@@ -44,3 +44,8 @@ async with f() as b:
 async with f() as b:  # Check 9
     pass
 print(1)
+
+print(1)  # Check 10
+async with f() as b:
+    pass
+print(1)

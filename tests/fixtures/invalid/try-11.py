@@ -65,3 +65,10 @@ try:  # Check 9
 except:
     pass
 print(1)
+
+print(1)  # Check 10
+try:
+    pass
+except:
+    pass
+print(1)

@@ -1,34 +1,38 @@
 v = 1  # Check 1
-raise Exception()
+assert 1 == 1
 
-raise Exception()  # Check 2
-raise Exception()
+assert 1 == 1  # Check 2
+assert 1 == 1
 
 v = 1  # Check 3
 # Lorem ipsum dolor sit amet
-raise Exception()
+assert 1 == 1
 
 v = 1  # Check 4
 """
 Lorem ipsum dolor sit amet
 """
-raise Exception()
+assert 1 == 1
 
 a = """
 Multiline string assignment
 """
-raise Exception()  # Check 5
+assert 1 == 1  # Check 5
 
 for i in [1, 2]:  # Check 6
     v = 1
-    raise Exception()
+    assert 1 == 1
 
 for i in [1, 2]:  # Check 7
-    raise Exception()
-    raise Exception()
+    assert 1 == 1
+    assert 1 == 1
 
 print(1)  # Check 8
-raise Exception()
+assert 1 == 1
 
-raise Exception()  # Check 9
+assert 1 == 1  # Check 9
+print(1)
+
+print(1)  # Check 9
+assert 1 == 1
 print(1)

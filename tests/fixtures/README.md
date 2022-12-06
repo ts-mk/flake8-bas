@@ -15,15 +15,16 @@
 
 1. No blank line between 2 statements of a different type.
 2. No blank line between 2 statements of the same type.
-3. Lorem ipsum dolor sit amet with no blank line above the comment.
-4. Constant expression before statement with no blank line above the comment.
+3. Comment above statement with no blank line preceding.
+4. Constant expression before statement with no blank line preceding.
 5. Multiline assignment before statement.
 6. No blank line between 2 statements of a different type within a compound statement.
 7. No blank line between 2 statements of the same type within a compound statement.
 8. Statement following a non-constant expression.
 9. No blank line after statement.
+10. No blank before AND after statement. (should yield 2 errors)
 
-NOTES:
+## Notes
 
 * Not all checks are applicable for each statement type, e.g. `yield` should theoretically never be the first line of code.
 * The code doesn't need to make sense or be executable, as long as it doesn't contain syntax errors.

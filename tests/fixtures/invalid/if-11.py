@@ -1,46 +1,51 @@
 v = 1  # Check 1
-with f() as b:
+if 1 == 1:
     pass
 
-with f() as b:  # Check 2
+if 1 == 1:  # Check 2
     pass
-with f() as b:
+if 1 == 1:
     pass
 
 v = 1  # Check 3
 # Lorem ipsum dolor sit amet
-with f() as b:
+if 1 == 1:
     pass
 
 v = 1  # Check 4
 """
 Lorem ipsum dolor sit amet
 """
-with f() as b:
+if 1 == 1:
     pass
 
 # Check 5
 a = """
 Multiline string assignment
 """
-with f() as b:
+if 1 == 1:
     pass
 
-with f() as b:  # Check 6
+for i in [1, 2]:  # Check 6
     v = 1
-    with f() as b:
+    if 1 == 1:
         pass
 
-with f() as b:  # Check 7
-    with f() as b:
+for i in [1, 2]:  # Check 7
+    if 1 == 1:
         pass
-    with f() as b:
+    if 1 == 1:
         pass
 
 print(1)  # Check 8
-with f() as b:
+if 1 == 1:
     pass
 
-with f() as b:  # Check 9
+if 1 == 1:  # Check 9
+    pass
+print(1)
+
+print(1)  # Check 10
+if 1 == 1:
     pass
 print(1)

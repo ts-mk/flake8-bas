@@ -10,6 +10,10 @@ from _pytest.fixtures import SubRequest
 
 from flake8_bas.checker import STATEMENTS, Statement, StatementChecker
 
+FILE_FORMAT = re.compile(r"([a-z_]+)-?(\d*)")
+STATEMENT_MAP = {s.keyword: s for s in STATEMENTS}
+TEST_ROOT = Path(__file__).parent
+
 
 @dataclass(frozen=True)
 class StatementTest:
@@ -25,11 +29,6 @@ class StatementTest:
         :return: errors
         """
         return list(self.checker.run())
-
-
-FILE_FORMAT = re.compile(r"([a-z_]+)-?(\d*)")
-STATEMENT_MAP = {s.keyword: s for s in STATEMENTS}
-TEST_ROOT = Path(__file__).parent
 
 
 def parametrized_name(testcase: Any) -> str:

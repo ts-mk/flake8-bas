@@ -1,46 +1,51 @@
 v = 1  # Check 1
-class C:
+while True:
     pass
 
-class C:  # Check 2
+while True:  # Check 2
     pass
-class C:
+while True:
     pass
 
 v = 1  # Check 3
 # Lorem ipsum dolor sit amet
-class C:
+while True:
     pass
 
 v = 1  # Check 4
 """
 Lorem ipsum dolor sit amet
 """
-class C:
+while True:
     pass
 
 # Check 5
 a = """
 Multiline string assignment
 """
-class C:
+while True:
     pass
 
-for i in [1, 2]:  # Check 6
+while True:  # Check 6
     v = 1
-    class C:
+    while True:
         pass
 
-for i in [1, 2]:  # Check 7
-    class C:
+while True:  # Check 7
+    while True:
         pass
-    class C:
+    while True:
         pass
 
 print(1)  # Check 8
-class C:
+while True:
     pass
 
-class C:  # Check 9
+while True:  # Check 9
+    pass
+print(1)
+
+print(1)  # Check 10
+while True:
     pass
 print(1)

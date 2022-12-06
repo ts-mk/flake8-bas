@@ -21,10 +21,10 @@ this is not one `if/else` statement but an `if` statement followed by a `for/els
 ```python
 if 1 == 1:
     print(1)
-for n in [1, 2]:
+for n in [2, 3]:
     print(n)
 else:
-    print(3)
+    print(4)
 ```
 
 This Flake8 plugin therefore checks for a blank line before/after each statement as long as it's **not the first/last
@@ -35,6 +35,21 @@ line of code within a module** and **not the first/last statement within a compo
 
 * Python >= 3.8
 * flake8 >= 3.8.0
+
+
+## Installation
+
+### Pip
+
+```bash
+$ pip install flake8-bas
+```
+
+### Poetry
+
+```bash
+$ poetry add --dev flake8-bas
+```
 
 
 ## Use in production
@@ -102,8 +117,8 @@ siblings of those types does not make sense, but the plugin would raise these er
 
 ## Overlapping errors
 
-The extension produces overlapping errors, that is two statements of different types following each other would produce
-one "before" error and one "after" error pointing to the same line of code:
+The extension produces overlapping errors, that is **two statements of different types** following each other would
+produce one "before" error and one "after" error pointing to the same line of code:
 
 ```python
 a = 1
@@ -133,7 +148,8 @@ and have a different behaviour for a different set of files:
 [flake8]
 ignore = BAS3
 per-file-ignores =
-    app/*: BAS101, BAS102, BAS103, BAS104, BAS105, BAS106, BAS107, BAS108, BAS109, BAS110, BAS201, BAS202, BAS203, BAS204, BAS205, BAS206, BAS207, BAS208, BAS209, BA2110
+    app/*: BAS101, BAS102, BAS103, BAS104, BAS105, BAS106, BAS107, BAS108, BAS109, BAS110,
+           BAS201, BAS202, BAS203, BAS204, BAS205, BAS206, BAS207, BAS208, BAS209, BAS210
     tests/*: BAS1, BAS2
 ```
 
@@ -148,7 +164,8 @@ Only compound statements plus `return` and `yield` would raise errors.
 
 ```ini
 [flake8]
-ignore = BAS101, BAS102, BAS103, BAS104, BAS105, BAS106, BAS107, BAS108, BAS109, BAS110, BAS201, BAS202, BAS203, BAS204, BAS205, BAS206, BAS207, BAS208, BAS209, BA2110, BAS3
+ignore = BAS101, BAS102, BAS103, BAS104, BAS105, BAS106, BAS107, BAS108, BAS109, BAS110,
+         BAS201, BAS202, BAS203, BAS204, BAS205, BAS206, BAS207, BAS208, BAS209, BAS210, BAS3
 ```
 
 ### All simple statements excluded

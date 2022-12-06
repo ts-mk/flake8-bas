@@ -1,35 +1,38 @@
 v = 1  # Check 1
-global v
+del a
 
-global v  # Check 2
-global v
+del a  # Check 2
+del a
 
 v = 1  # Check 3
 # Lorem ipsum dolor sit amet
-global v
+del a
 
 v = 1  # Check 4
 """
 Lorem ipsum dolor sit amet
 """
-global v
+del a
 
-# Check 5
 a = """
 Multiline string assignment
 """
-global v
+del a  # Check 5
 
 for i in [1, 2]:  # Check 6
     v = 1
-    global v
+    del a
 
 for i in [1, 2]:  # Check 7
-    global v
-    global v
+    del a
+    del a
 
 print(1)  # Check 8
-global v
+del a
 
-global v  # Check 9
+del a  # Check 9
+print(1)
+
+print(1)  # Check 10
+del a
 print(1)

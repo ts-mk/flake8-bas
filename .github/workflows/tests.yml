@@ -13,6 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  COVERAGE_RESULT: ./coverage.xml
   POETRY_VERSION: '1.1.13'
   # This Python version must match the one in .pre-commit-config.yaml
   PYTHON_VERSION: '3.10'
@@ -42,8 +43,8 @@ jobs:
                 format('.github/workflows/{0}', env.SELF),
                 format('{0}/**.py', env.PACKAGE_NAME),
                 'tests/**',
+                'poetry.lock',
                 '.pre-commit-config.yaml',
-                'pyproject.toml',
                 'setup.cfg'
               )
             }}
@@ -123,8 +124,21 @@ jobs:
           poetry run pytest
           --tb=short
           --cov=${{ env.PACKAGE_NAME }}
+          --cov-report=xml:${{ env.COVERAGE_RESULT }}
           --cov-report=term
           ./tests/
+
+      - name: Store the test coverage result
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: ${{ env.COVERAGE_RESULT }}
+          retention-days: 90
+
+      - name: Add coverage into job's summary
+        run: >-
+          poetry run ${{ env.UTILS }} coverage_summary
+          --coverage_file="${{ env.GITHUB_WORKSPACE }}/${{ env.COVERAGE_RESULT }}"
 
   compatibility:
     name: Compatibility tests
@@ -133,6 +147,7 @@ jobs:
       fail-fast: false
       matrix:
         python: ['3.8', '3.9', '3.10', '3.11']
+        # Version 5.0.0 of Flake8 is buggy and would output duplicate errors
         flake8: ['3.8.0', '4.0.0', '5.0.1']
     steps:
       - name: Dump workflow context

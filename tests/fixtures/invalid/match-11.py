@@ -54,3 +54,9 @@ match True:  # Check 9
     case True:
         pass
 print(1)
+
+print(1)  # Check 10
+match True:
+    case True:
+        pass
+print(1)

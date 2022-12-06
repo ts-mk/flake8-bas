@@ -1,5 +1,6 @@
 import re
 from pathlib import Path
+from typing import Callable
 
 import pytest
 
@@ -64,7 +65,7 @@ def test_invalid_statements(statement_test: StatementTest):
         ), f"Number of {error_code} errors is supposed to be >0 and <{len(result)}."
 
 
-def test_overlapping_errors(checker):
+def test_overlapping_errors(checker: Callable):
     """
     Tests that two consecutive statements result in overlapping errors, that is
     that both errors point to the same line of code.

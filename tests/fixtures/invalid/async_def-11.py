@@ -44,3 +44,8 @@ async def f():
 async def f():  # Check 9
     pass
 print(1)
+
+print(1)  # Check 10
+async def f():
+    pass
+print(1)

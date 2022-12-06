@@ -1,10 +1,12 @@
 import ast
 import re
+from contextlib import suppress
 from collections import OrderedDict
 from dataclasses import dataclass, astuple
 from typing import Generator, List, Optional, NamedTuple, Tuple
 
-import pkg_resources
+with suppress(Exception):
+    import pkg_resources
 
 
 @dataclass(init=False, frozen=True)
@@ -13,7 +15,7 @@ class StatementErrors:
     Statement's error codes.
     """
 
-    ERROR_NAMESPACE = "BAS"
+    NAMESPACE = "BAS"
 
     after: str
     before: str
@@ -25,13 +27,13 @@ class StatementErrors:
         :param after: error number for a missing blank line after a statement
         :param sibling: error number for a missing blank between sibling statements
         """
-        self.__dict__["before"] = f"{self.ERROR_NAMESPACE}{before}"
-        self.__dict__["after"] = f"{self.ERROR_NAMESPACE}{after}"
-        self.__dict__["sibling"] = f"{self.ERROR_NAMESPACE}{sibling}"
+        self.__dict__["before"] = f"{self.NAMESPACE}{before}"
+        self.__dict__["after"] = f"{self.NAMESPACE}{after}"
+        self.__dict__["sibling"] = f"{self.NAMESPACE}{sibling}"
 
     def __len__(self) -> int:
         """
-        Returns number of the errors.
+        Returns count of the errors.
 
         :return: length
         """
@@ -227,8 +229,11 @@ class StatementChecker:
 
     BLANK_LINE_RE = re.compile(r"^\s*\n")
 
-    name = "flake8-bas"
-    version = pkg_resources.get_distribution(name).version
+    try:
+        name = "flake8-bas"
+        version = pkg_resources.get_distribution(name).version
+    except Exception:
+        version = "?.?.?"
 
     def __init__(self, tree: ast.Module, lines: List[str]) -> None:
         """
@@ -307,7 +312,7 @@ class StatementChecker:
         :param on_behalf_of: original node to be evaluated
         :return: error code
         """
-        previous_node: ast.AST = self.tree.get(node.index - 1)
+        previous_node: Optional[ast.AST] = self.tree.get(node.index - 1)
 
         # A (string) constant expression is allowed to be directly above the node
         # but then it needs to match all the other rules so we need to do
@@ -360,7 +365,7 @@ class StatementChecker:
         :param on_behalf_of: original node to be evaluated
         :return: error code
         """
-        next_node = self.tree.get(node.index + 1)
+        next_node: Optional[ast.AST] = self.tree.get(node.index + 1)
 
         # If the node is the last node in the module, dismiss it
         if node is self.tree[next(reversed(self.tree))]:
@@ -396,16 +401,17 @@ class StatementChecker:
 
     def _node_error(
         self, node: ast.AST, on_behalf_of: Optional[ast.AST] = None
-    ) -> Optional[Error]:
+    ) -> Optional[List[Error]]:
         """
         Checks whether the node is valid or not.
 
         :param node: AST node
         :param on_behalf_of: original node to be evaluated
-        :return: error code
+        :return: list of errors
         """
+        output = []
         on_behalf_of = on_behalf_of or node
-        parent_node = getattr(node, "parent_node", None)
+        parent_node: Optional[ast.AST] = getattr(node, "parent_node", None)
 
         # Non-statement objects should be dismissed
         if not isinstance(on_behalf_of, tuple(self.statement_map.keys())):
@@ -426,9 +432,12 @@ class StatementChecker:
             return self._node_error(node=parent_node, on_behalf_of=on_behalf_of)
 
         if error := self._error_before(node=node, on_behalf_of=on_behalf_of):
-            return error
-        elif error := self._error_after(node=node, on_behalf_of=on_behalf_of):
-            return error
+            output.append(error)
+
+        if error := self._error_after(node=node, on_behalf_of=on_behalf_of):
+            output.append(error)
+
+        return output
 
     def run(self) -> Generator[Error, None, None]:
         """
@@ -437,6 +446,11 @@ class StatementChecker:
 
         :return: error generator
         """
+        output = []
+
         for node in self.tree.values():
-            if error := self._node_error(node=node):
-                yield error
+            if errors := self._node_error(node=node):
+                output.extend(errors)
+
+        for error in output:
+            yield error
