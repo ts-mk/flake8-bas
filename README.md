@@ -6,7 +6,7 @@
 ![codecov](https://codecov.io/gh/ts-mk/flake8-bas/branch/master/graph/badge.svg?token=PI2I083V09)
 ![CI](https://github.com/ts-mk/flake8-bas/actions/workflows/tests.yml/badge.svg)
 
-PEP 8 recommends to use blank lines only to separate logical sections:
+[PEP 8](https://peps.python.org/pep-0008/) recommends to use blank lines only to separate logical sections:
 
 > Extra blank lines may be used (sparingly) to separate groups of related functions. Blank lines may be omitted between
 > a bunch of related one-liners (e.g. a set of dummy implementations).
