@@ -13,7 +13,7 @@
 >
 > Use blank lines in functions, sparingly, to indicate logical sections.
 
-However, adding blank lines before and after compound statements (e.g. `if`/`else` block) as well as some simple
+However, adding blank lines before and after compound statements (e.g. `if/else` block) as well as some simple
 statements (e.g. `return`) might improve code readability which is otherwise hindered despite syntax highlighting that
 modern code editors provide, as demonstrated in the following example where it might not be immediately apparent that
 this is not one `if/else` statement but an `if` statement followed by a `for/else` statement:
@@ -70,7 +70,7 @@ e.g. `BAS2`.
 * *Before Error* - missing line before a statement as long as the preceding element is not a statement of the same type.
 * *After Error* - missing line after a statement as long as the element that follows is not a statement of the same
 type.
-* *Sibling Error* - missing line between two or more consecutive statements of the same type, e.g. `del`.
+* *Sibling Error* - missing line between two or more consecutive statements of the same type, e.g. `del`.
 
 ### BAS1xx/BAS2xx/BAS3xx: Simple statements
 
@@ -141,8 +141,8 @@ However, two statements of the same type would produce only one "sibling" error.
 The plugin checks for blank lines around **every statement**. There are no custom configuration options. Instead, you
 could simply ignore some errors. This system has benefits as well as drawbacks.
 
-The benefit is that you could take advantage of Flake8's `ignore` and `per-file-ignores` (flake8>=3.7.0) config options
-and have a different behaviour for a different set of files:
+The benefit is that you could take advantage of Flake8's `ignore` and `per-file-ignores` (flake8 >= 3.7.0) config
+options and have a different behaviour for a different set of files:
 
 ```ini
 [flake8]
@@ -154,8 +154,7 @@ per-file-ignores =
 ```
 
 The drawback is that there are no sane defaults and you would inevitably need to exclude some errors, either because
-they are undesirable, make little sense, or the same/conflicting checks might already be applied by another plugin (e.g.
-checks by [flake8-import-order](https://github.com/PyCQA/flake8-import-order)) or should be handled by other
+they are undesirable, make little sense, or the same/conflicting checks might already be applied by another plugin (e.g. checks by [flake8-import-order](https://github.com/PyCQA/flake8-import-order)) or should be handled by other
 (formatting) tools (e.g. [black](https://github.com/psf/black)).
 
 ### Recommended exclusions

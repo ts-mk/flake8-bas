@@ -11,6 +11,9 @@ from xml.etree import ElementTree
 
 from click import Argument, Context, argument, get_text_stream, group, option
 
+GITHUB_OUTPUT = Path(os.getenv("GITHUB_OUTPUT"))
+GITHUB_STEP_SUMMARY = Path(os.getenv("GITHUB_STEP_SUMMARY"))
+
 
 @group()
 def main() -> None:
@@ -46,7 +49,7 @@ def save_output(name: str, value: Union[str, int, float]) -> None:
     except Exception:
         delimiter = "EOF"
 
-    with Path(os.getenv("GITHUB_OUTPUT")).open(mode="a") as f:
+    with GITHUB_OUTPUT.open(mode="a") as f:
         if "\n" in value:
             f.write(f"{name}<<{delimiter}\n{value.strip()}\n{delimiter}\n")
         else:
@@ -59,7 +62,7 @@ def add_summary(text: str) -> None:
 
     :param text: Markdown content
     """
-    with Path(os.getenv("GITHUB_STEP_SUMMARY")).open(mode="a") as f:
+    with GITHUB_STEP_SUMMARY.open(mode="a") as f:
         f.write(f"{text}\n\n")
 
 
@@ -72,10 +75,9 @@ def add_summary(text: str) -> None:
 def assert_error_count(
     errors: str, directory: str, exclude: Optional[str] = None
 ) -> None:
-    errors = errors or ""
     directory = Path(directory)
-    input_error_count = len(errors.split("\n"))
-    error_count = 0
+    input_error_count = len(errors.strip().split("\n")) if errors.strip() else 0
+    expected_error_count = 0
 
     if not directory.is_dir():
         raise Exception("Directory expected")
@@ -84,14 +86,14 @@ def assert_error_count(
         if exclude and re.search(exclude, str(file)):
             continue
 
-        if not (match := re.match(r"([a-z_]+)\-(\d+)", file.stem)):
+        if not (match := re.match(r"([a-z_]+)-(\d+)", file.stem)):
             raise Exception(f"Invalid file name format for {file.name}")
 
-        error_count += int(match.groups()[1])
+        expected_error_count += int(match.groups()[1])
 
-    if input_error_count != error_count:
+    if input_error_count != expected_error_count:
         raise Exception(
-            f"Invalid error count - {error_count} expected "
+            f"Invalid error count - {expected_error_count} expected "
             f"but {input_error_count} received"
         )
 
