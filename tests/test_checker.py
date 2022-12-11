@@ -1,5 +1,4 @@
 import ast
-from collections import OrderedDict
 from typing import Callable
 
 import pytest
@@ -20,14 +19,14 @@ def test_blank_line_regex(value: str, expected: bool):
     assert (StatementChecker.BLANK_LINE_RE.match(value) is not None) is expected
 
 
-def test_indexed_tree(file_fixture: Callable):
+def test_indexed_nodes(file_fixture: Callable):
     tree = ast.parse(file_fixture("indexed_tree.py").read_text())
-    indexed_tree = StatementChecker._indexed_tree(tree)
+    nodes = StatementChecker._indexed_nodes(tree)
     counter_index = 0
 
-    assert isinstance(indexed_tree, OrderedDict)
+    assert isinstance(nodes, list)
 
-    for index, node in indexed_tree.items():
+    for index, node in enumerate(nodes):
         assert index == counter_index
         assert node.index == counter_index
 
@@ -45,7 +44,7 @@ def test_real_node(
     statement: type, equal: bool, real_node_cls: type, file_fixture: Callable
 ):
     tree = ast.parse(file_fixture("real_node.py").read_text())
-    nodes = list(StatementChecker._indexed_tree(tree).values())
+    nodes = StatementChecker._indexed_nodes(tree)
     node = list(filter(lambda n: isinstance(n, statement), nodes))[0]
     result = StatementChecker._real_node(node)
 
@@ -64,7 +63,7 @@ def test_real_node(
 )
 def test_is_nth_child(statement: type, index: int, file_fixture: Callable):
     tree = ast.parse(file_fixture("nth_child.py").read_text())
-    nodes = list(StatementChecker._indexed_tree(tree).values())
+    nodes = StatementChecker._indexed_nodes(tree)
     node = list(filter(lambda n: isinstance(n, statement), nodes))[0]
 
     assert StatementChecker._is_nth_child(node, index)

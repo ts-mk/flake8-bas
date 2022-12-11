@@ -1,7 +1,6 @@
 import ast
 import re
 from contextlib import suppress
-from collections import OrderedDict
 from dataclasses import dataclass, astuple
 from typing import Generator, List, Optional, NamedTuple, Tuple
 
@@ -241,7 +240,7 @@ class StatementChecker:
         :param lines: module's lines of code
         """
         self.statement_map = {s.cls: s for s in STATEMENTS if s.cls}
-        self.tree = self._indexed_tree(tree)
+        self.nodes = self._indexed_nodes(tree)
         self.blank_lines = [
             lineno
             for lineno, line in enumerate(lines, start=1)
@@ -249,24 +248,26 @@ class StatementChecker:
         ]
 
     @classmethod
-    def _indexed_tree(cls, module_tree: ast.Module) -> OrderedDict:
+    def _indexed_nodes(cls, module_tree: ast.Module) -> list:
         """
-        Takes an AST tree and turns it into an ordered dict with each node having
+        Takes an AST tree and turns it into a list of nodes each having
         an index number.
 
         :param module_tree: AST tree
-        :return: nodes with index
+        :return: nodes with index numbers
         """
-        tree = OrderedDict()
+        nodes = []
+        index = 0
 
-        for index, node in enumerate(ast.walk(module_tree)):
+        for node in ast.walk(module_tree):
             for child in ast.iter_child_nodes(node):
                 child.parent_node = node
 
             node.index = index
-            tree[index] = node
+            nodes.append(node)
+            index += 1
 
-        return tree
+        return nodes
 
     @classmethod
     def _real_node(cls, node: ast.AST) -> ast.AST:
@@ -312,7 +313,9 @@ class StatementChecker:
         :param on_behalf_of: original node to be evaluated
         :return: error code
         """
-        previous_node: Optional[ast.AST] = self.tree.get(node.index - 1)
+        previous_node: Optional[ast.AST] = (
+            self.nodes[node.index - 1] if node.index - 1 >= 0 else None
+        )
 
         # A (string) constant expression is allowed to be directly above the node
         # but then it needs to match all the other rules so we need to do
@@ -365,10 +368,12 @@ class StatementChecker:
         :param on_behalf_of: original node to be evaluated
         :return: error code
         """
-        next_node: Optional[ast.AST] = self.tree.get(node.index + 1)
+        next_node: Optional[ast.AST] = (
+            self.nodes[node.index + 1] if node.index + 1 < len(self.nodes) else None
+        )
 
         # If the node is the last node in the module, dismiss it
-        if node is self.tree[next(reversed(self.tree))]:
+        if node is self.nodes[-1]:
             return
 
         # If the node is a first child of a compound statement, it doesn't need
@@ -399,9 +404,9 @@ class StatementChecker:
             type(self),
         )
 
-    def _node_error(
+    def _node_errors(
         self, node: ast.AST, on_behalf_of: Optional[ast.AST] = None
-    ) -> Optional[List[Error]]:
+    ) -> List[Error]:
         """
         Checks whether the node is valid or not.
 
@@ -415,11 +420,11 @@ class StatementChecker:
 
         # Non-statement objects should be dismissed
         if not isinstance(on_behalf_of, tuple(self.statement_map.keys())):
-            return
+            return output
 
         # First line of code could be dismissed
         if getattr(node, "lineno", None) == 1:
-            return
+            return output
 
         # `yield (from)` is a bit of an oddball - it's always "wrapped" in ast.Expr
         # so we need to check that instead
@@ -429,7 +434,7 @@ class StatementChecker:
             and isinstance(parent_node, ast.Expr)
             and getattr(parent_node, "value", None) is node
         ):
-            return self._node_error(node=parent_node, on_behalf_of=on_behalf_of)
+            return self._node_errors(node=parent_node, on_behalf_of=on_behalf_of)
 
         if error := self._error_before(node=node, on_behalf_of=on_behalf_of):
             output.append(error)
@@ -446,11 +451,6 @@ class StatementChecker:
 
         :return: error generator
         """
-        output = []
-
-        for node in self.tree.values():
-            if errors := self._node_error(node=node):
-                output.extend(errors)
-
-        for error in output:
-            yield error
+        for node in self.nodes:
+            for error in self._node_errors(node=node):
+                yield error

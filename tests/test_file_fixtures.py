@@ -14,7 +14,7 @@ def test_valid_statements(statement_test: StatementTest):
     Tests that all files in fixtures/valid/ do not raise any errors.
     """
     assert (
-        len(statement_test.checker.tree) > 1
+        len(statement_test.checker.nodes) > 1
     ), f"{statement_test.file.name} might be empty."
 
     result = statement_test.run()
