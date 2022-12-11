@@ -263,6 +263,9 @@ class StatementChecker:
             for child in ast.iter_child_nodes(node):
                 child.parent_node = node
 
+            if not getattr(node, "lineno", None):
+                continue
+
             node.index = index
             nodes.append(node)
             index += 1
@@ -372,8 +375,8 @@ class StatementChecker:
             self.nodes[node.index + 1] if node.index + 1 < len(self.nodes) else None
         )
 
-        # If the node is the last node in the module, dismiss it
-        if node is self.nodes[-1]:
+        # If there is no node after, dismiss it
+        if not next_node:
             return
 
         # If the node is a first child of a compound statement, it doesn't need
@@ -390,7 +393,7 @@ class StatementChecker:
 
         # If the next node is a statement of the same type, then we could dismiss it
         # because the next item would raise a sibling error itself
-        if next_node and isinstance(self._real_node(next_node), on_behalf_of.__class__):
+        if isinstance(self._real_node(next_node), on_behalf_of.__class__):
             return
 
         # All valid conditions exhausted so return an error
