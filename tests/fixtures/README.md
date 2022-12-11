@@ -1,4 +1,4 @@
-# Checks used in the files
+# File fixtures for statements
 
 ## Valid statements
 
@@ -26,5 +26,8 @@
 
 ## Notes
 
-* Not all checks are applicable for each statement type, e.g. `yield` should theoretically never be the first line of code.
+* Not all checks are applicable for each statement type, e.g. `yield` should theoretically never be the first line of
+  code.
 * The code doesn't need to make sense or be executable, as long as it doesn't contain syntax errors.
+* The benefit of having the code in the files is that they are easy to edit and inspect but moreover they are easy
+  to use out of the test context, specifically in GitHub Actions where `flake8` is called on the entire set of fixtures.

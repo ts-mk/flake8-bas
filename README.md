@@ -13,10 +13,10 @@
 >
 > Use blank lines in functions, sparingly, to indicate logical sections.
 
-However, adding blank lines before and after compound statements (e.g. `if/else` block) as well as some simple
-statements (e.g. `return`) might improve code readability which is otherwise hindered despite syntax highlighting that
-modern code editors provide, as demonstrated in the following example where it might not be immediately apparent that
-this is not one `if/else` statement but an `if` statement followed by a `for/else` statement:
+However, adding blank lines before and after compound statements (e.g. `if/else` block) as well as some simple
+statements (e.g. `return`) might improve code readability which is otherwise hindered despite syntax highlighting
+that modern code editors provide, as demonstrated in the following example where it might not be immediately apparent
+that this is not one `if/else` statement but an `if` statement followed by a `for/else` statement:
 
 ```python
 if 1 == 1:
@@ -63,13 +63,13 @@ The statements are split into different categories based on whether they are
 [simple statements](https://docs.python.org/3.11/reference/simple_stmts.html) or
 [compound statements](https://docs.python.org/3.11/reference/compound_stmts.html), and whether the error occurs between
 two statements of the same type or not. This allows you to filter entire groups using `BAS` and the first digit,
-e.g. `BAS2`.
+e.g. `BAS2`.
 
 **Error types:**
 
 * *Before Error* - missing line before a statement as long as the preceding element is not a statement of the same type.
 * *After Error* - missing line after a statement as long as the element that follows is not a statement of the same
-type.
+                  type.
 * *Sibling Error* - missing line between two or more consecutive statements of the same type, e.g. `del`.
 
 ### BAS1xx/BAS2xx/BAS3xx: Simple statements
@@ -95,8 +95,8 @@ statements as well.
 | `yield`           | BAS112       | BAS212      | BAS312        |
 | `yield from`      | BAS113       | BAS213      | BAS313        |
 
-**Note:** Some of these errors shouldn't occur (e.g. `return` followed by another `return`) because having consecutive
-siblings of those types does not make sense, but the plugin would raise these errors anyway.
+**Note:** Some of these errors shouldn't occur (e.g. `return` followed by another `return`) because having
+consecutive siblings of those types does not make sense, but the plugin would raise these errors anyway.
 
 ### BAS5xx/BAS6xx/BAS7xx: Compound statements
 
@@ -148,13 +148,13 @@ options and have a different behaviour for a different set of files:
 [flake8]
 ignore = BAS3
 per-file-ignores =
-    app/*: BAS101, BAS102, BAS103, BAS104, BAS105, BAS106, BAS107, BAS108, BAS109, BAS110,
-           BAS201, BAS202, BAS203, BAS204, BAS205, BAS206, BAS207, BAS208, BAS209, BAS210
+    app/*: BAS10, BAS110, BAS20, BAS210
     tests/*: BAS1, BAS2
 ```
 
 The drawback is that there are no sane defaults and you would inevitably need to exclude some errors, either because
-they are undesirable, make little sense, or the same/conflicting checks might already be applied by another plugin (e.g. checks by [flake8-import-order](https://github.com/PyCQA/flake8-import-order)) or should be handled by other
+they are undesirable, make little sense, or the same/conflicting checks might already be applied by another plugin
+(e.g. checks by [flake8-import-order](https://github.com/PyCQA/flake8-import-order)) or should be handled by other
 (formatting) tools (e.g. [black](https://github.com/psf/black)).
 
 ### Recommended exclusions
@@ -163,8 +163,7 @@ Only compound statements plus `return` and `yield` would raise errors.
 
 ```ini
 [flake8]
-ignore = BAS101, BAS102, BAS103, BAS104, BAS105, BAS106, BAS107, BAS108, BAS109, BAS110,
-         BAS201, BAS202, BAS203, BAS204, BAS205, BAS206, BAS207, BAS208, BAS209, BAS210, BAS3
+ignore = BAS10, BAS110, BAS20, BAS210, BAS30, BAS310
 ```
 
 ### All simple statements excluded
