@@ -1,9 +1,30 @@
-# IDEs and text editors
-.idea
-[._]*.s[a-w][a-z]
-[._]s[a-w][a-z]
+# OS files
+.AppleDouble
 .DS_Store
+.LSOverride
+.Trash-*
+.directory
+.fuse_hidden*
+.history/
+.nfs*
+Thumbs.db
+Thumbs.db:encryptable
+[Dd]esktop.ini
+ehthumbs.db
+ehthumbs_vista.db
+
+# IDEs and text editors
+*.stTheme.cache
+*.sublime-workspace
+*.tmPreferences.cache
+*.tmlanguage.cache
+.idea
 .vscode
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
 
 # Distribution / packaging
 .Python
@@ -33,17 +54,17 @@ MANIFEST
 /VENV/
 
 # Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
 *.cover
-.coverage.*
-coverage.xml
 .cache
-nosetests.xml
+.coverage
+.coverage.*
 .hypothesis/
+.nox/
 .pytest_cache/
+.tox/
+coverage.xml
+htmlcov/
+nosetests.xml
 
 # Compiled code
 *.pyc
@@ -52,12 +73,12 @@ __pycache__
 # Other files
 *~
 *.bak
-*.log
 *.lock
 !poetry.lock
+*.log
 *.pid
 *.socket
-/.local/
+.local/
 
 # Preserve .gitkeep files
 !.gitkeep
