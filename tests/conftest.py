@@ -97,6 +97,14 @@ def error_count_from_file(file: Path) -> int:
 
 
 @pytest.fixture()
+def file_fixture() -> Callable:
+    def _(file: str) -> Path:
+        return Path(__file__).parent / "fixtures" / file
+
+    return _
+
+
+@pytest.fixture()
 def checker() -> Callable:
     """
     Returns a function that would create a StatementChecker instance for the given file.
