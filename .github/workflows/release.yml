@@ -1,0 +1,83 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: New version to be released
+        required: true
+        type: choice
+        default: skip
+        options:
+          - skip
+          - patch
+          - minor
+          - major
+
+env:
+  POETRY_VERSION: '1.1.13'
+  PYTHON_VERSION: '3.10'
+  SELF: release.yml
+  UTILS: ./.github/workflows/utils.py
+
+jobs:
+  release:
+    name: Version update & release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump workflow context
+        uses: crazy-max/ghaction-dump-context@v1.2.1
+
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Python setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Poetry installation
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: ${{ env.POETRY_VERSION }}
+
+      - name: Poetry setup
+        run: |
+          poetry config virtualenvs.create true
+          poetry config experimental.new-installer false
+
+      - name: Package installation
+        run: poetry install
+
+      - name: Set new package version
+        if: github.event.inputs.version != 'skip'
+        run: |
+          poetry version ${{ github.event.inputs.version }}
+          echo "NEW version: $(poetry version)"
+
+      - name: Set version in CHANGELOG.md
+        run: poetry run ${{ env.UTILS }} write-changelog-release --version="$(poetry version)"
+
+      - name: Git commit new version
+        uses: stefanzweifel/git-auto-commit-action@v4.15.4
+        with:
+          commit_author: GA bot <noreply@github.com>
+          commit_message: Version update
+          commit_user_email: noreply@github.com
+          commit_user_name: GA bot
+          file_pattern: pyproject.toml CHANGELOG.md
+          skip_checkout: true
+
+      - name: Set release data
+        id: release
+        run: poetry run ${{ env.UTILS }} set-release-data --version="$(poetry version)" --commit=$(git rev-parse HEAD)
+
+      - name: Create release
+        uses: ncipollo/release-action@v1.11.1
+        with:
+          allowUpdates: false
+          commit: ${{ steps.release.outputs.commit }}
+          tag: ${{ steps.release.outputs.tag }}
+          name: ${{ steps.release.outputs.title }}
+          body: ${{ steps.release.outputs.notes }}
+          token: ${{ secrets.GA_TOKEN }}

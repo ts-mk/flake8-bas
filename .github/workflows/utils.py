@@ -3,6 +3,7 @@
 import os
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
 from random import SystemRandom
 from string import ascii_uppercase
@@ -11,8 +12,18 @@ from xml.etree import ElementTree
 
 from click import Argument, Context, argument, get_text_stream, group, option
 
-GITHUB_OUTPUT = Path(os.getenv("GITHUB_OUTPUT"))
-GITHUB_STEP_SUMMARY = Path(os.getenv("GITHUB_STEP_SUMMARY"))
+# Temp directory and files in it are used only when running this script locally
+TEMP = Path(__file__).parents[2] / "tmp"
+TEMP.mkdir(exist_ok=True)
+(TEMP / "GITHUB_OUTPUT.txt").unlink(missing_ok=True)
+(TEMP / "GITHUB_STEP_SUMMARY.txt").unlink(missing_ok=True)
+
+CHANGELOG = Path(__file__).parents[2] / "CHANGELOG.md"
+GITHUB_OUTPUT = Path(os.getenv("GITHUB_OUTPUT", TEMP / "GITHUB_OUTPUT.txt"))
+GITHUB_STEP_SUMMARY = Path(
+    os.getenv("GITHUB_STEP_SUMMARY", TEMP / "GITHUB_STEP_SUMMARY.txt")
+)
+VERSION_REGEX = re.compile(r"\d+\.\d+\.\d+")
 
 
 @group()
@@ -66,6 +77,30 @@ def add_summary(text: str) -> None:
         f.write(f"{text}\n\n")
 
 
+def version_notes(version: str) -> str:
+    """
+    Retrieves release notes from CHANGELOG.md.
+
+    :param version: release version
+    """
+    content = CHANGELOG.read_text()
+
+    try:
+        start = re.search(
+            rf"^##\s*\[\s*{version}\s*\].*$", content, re.MULTILINE
+        ).span()[1]
+        end = re.search(r"^##\s*\[", content[start:], re.MULTILINE)
+
+        if end:
+            output = content[start : (start + end.span()[0])].strip()  # noqa: E203
+        else:
+            output = content[start:].strip()
+    except Exception as e:
+        raise Exception("Failed to locate release notes.") from e
+
+    return output
+
+
 @main.command(
     short_help="Asserts that errors reported by Flake8 match expected error count."
 )
@@ -106,6 +141,47 @@ def coverage_summary(coverage_file: str) -> None:
     )
 
     add_summary(f"**Coverage:** {coverage}%")
+
+
+@main.command(short_help="Modifies CHANGELOG.md by creating a new release.")
+@option("--version", required=True, help="Version to be set")
+def write_changelog_release(version: str) -> None:
+    keyword = "## [Unreleased]"
+    content = CHANGELOG.read_text()
+    version = VERSION_REGEX.search(version).group()
+
+    if not version:
+        raise Exception("Missing package version")
+
+    # If the version already exists in the changelog, do nothing
+    if f"## [{version}]" in content and keyword not in content:
+        print(
+            f"Changelog entry for version {version} already exists.",
+            f"Skipping modification of {CHANGELOG.name}.",
+        )
+
+    if keyword not in content:
+        raise Exception(f"{keyword} not found in {CHANGELOG.name}")
+
+    CHANGELOG.write_text(
+        content.replace(
+            keyword,
+            f"{keyword}\n\n## [{version}] - {datetime.utcnow().strftime('%Y-%m-%d')}",
+        )
+    )
+
+
+@main.command(short_help="Sets all release information in the step's output.")
+@option("--version", required=True, help="Version to be set")
+@option("--commit", required=True, help="SHA of the commit")
+def set_release_data(version: str, commit: str) -> None:
+    version = VERSION_REGEX.search(version).group()
+
+    save_output("commit", commit)
+    save_output("tag", f"v{version}")
+    save_output("title", version)
+    save_output("notes", version_notes(version))
+    add_summary(f"**Version:** {version}")
 
 
 if __name__ == "__main__":

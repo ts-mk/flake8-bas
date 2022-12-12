@@ -79,6 +79,7 @@ __pycache__
 *.pid
 *.socket
 .local/
+tmp/
 
 # Preserve .gitkeep files
 !.gitkeep
