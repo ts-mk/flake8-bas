@@ -8,7 +8,7 @@ on:
         required: false
         type: string
   schedule:
-    - cron: '0 0 * * 1'
+    - cron: '0 0 1 * *'
 
 concurrency:
   group: cleanup
@@ -29,5 +29,5 @@ jobs:
         uses: igorjs/gh-actions-clean-workflow@v3
         if: github.event.inputs.days != ''
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GA_TOKEN }}
           days_old: ${{ github.event.inputs.days || env.WORKFLOW_LOG_RETENTION }}

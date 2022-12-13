@@ -13,9 +13,6 @@ on:
           - prepatch
           - preminor
           - premajor
-  release:
-    types:
-      - released
 
 env:
   POETRY_VERSION: '1.1.13'
@@ -30,15 +27,10 @@ jobs:
       - name: Dump workflow context
         uses: crazy-max/ghaction-dump-context@v1
 
-      - name: Input validation
-        if: >-
-          (
-            github.event_name == 'workflow_dispatch' &&
-            github.event.inputs.version-update != 'skip' &&
-            github.ref_protected == 'true'
-          )
+      - name: Branch validation
+        if: github.ref_protected == 'true'
         run: |
-          echo 'ERROR: Version update cannot be performed on a protected branch'
+          echo 'ERROR: Manual deployment cannot be performed on a protected branch.'
           exit 1
 
       - name: Git checkout
@@ -61,12 +53,7 @@ jobs:
 
       - name: Version update
         id: version-update
-        if: >-
-          (
-            github.event_name == 'workflow_dispatch' &&
-            github.ref_protected != 'true' &&
-            github.event.inputs.version-update != 'skip'
-          )
+        if: github.event.inputs.version-update != 'skip'
         run: |
           VERSION=$(poetry version | awk '{print $2}')
 
@@ -76,7 +63,16 @@ jobs:
             poetry version ${{ github.event.inputs.version-update }}; \
           fi
           if [[ "$VERSION" == $(poetry version | awk '{print $2}') ]]; then \
-            echo "ERROR updating the package version"; \
+            echo "ERROR: Updating package version failed."; \
+            exit 1; \
+          fi
+
+      - name: Version validation
+        run: |
+          VERSION=$(poetry version | awk '{print $2}')
+
+          if [[ "$VERSION" =~ [a-z] ]]; then \
+            echo "ERROR: Non pre-release version detected."; \
             exit 1; \
           fi
 
@@ -91,8 +87,6 @@ jobs:
       - name: Git commit new version
         if: >-
           (
-            github.event_name == 'workflow_dispatch' &&
-            github.ref_protected != 'true' &&
             github.event.inputs.version-update != 'skip' &&
             steps.version-update.outcome == 'success'
           )

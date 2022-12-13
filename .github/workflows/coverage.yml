@@ -49,6 +49,11 @@ jobs:
         with:
           poetry-version: ${{ env.POETRY_VERSION }}
 
+      - name: Poetry setup
+        run: |
+          poetry config virtualenvs.create true
+          poetry config experimental.new-installer false
+
       - name: Package installation
         run: poetry install --remove-untracked
 

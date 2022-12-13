@@ -56,7 +56,7 @@ jobs:
           echo "NEW version: $(poetry version)"
 
       - name: Set version in CHANGELOG.md
-        run: poetry run ${{ env.UTILS }} write-changelog-release --version="$(poetry version)"
+        run: poetry run ${{ env.UTILS }} write-changelog-release --version="$(poetry version | awk '{print $2}')"
 
       - name: Git commit new version
         uses: stefanzweifel/git-auto-commit-action@v4.15.4
@@ -70,7 +70,10 @@ jobs:
 
       - name: Set release data
         id: release
-        run: poetry run ${{ env.UTILS }} set-release-data --version="$(poetry version)" --commit=$(git rev-parse HEAD)
+        run: >-
+          poetry run ${{ env.UTILS }} set-release-data
+          --version="$(poetry version | awk '{print $2}')"
+          --commit=$(git rev-parse HEAD)
 
       - name: Create release
         uses: ncipollo/release-action@v1.11.1
@@ -81,3 +84,11 @@ jobs:
           name: ${{ steps.release.outputs.title }}
           body: ${{ steps.release.outputs.notes }}
           token: ${{ secrets.GA_TOKEN }}
+
+      - name: Publish package to PyPI
+        id: run
+        run: >-
+          poetry publish
+          --build
+          --username="__token__"
+          --password="${{ secrets.PYPI_TOKEN }}"

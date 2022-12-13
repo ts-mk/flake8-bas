@@ -19,11 +19,11 @@ TEMP.mkdir(exist_ok=True)
 (TEMP / "GITHUB_STEP_SUMMARY.txt").unlink(missing_ok=True)
 
 CHANGELOG = Path(__file__).parents[2] / "CHANGELOG.md"
+GITHUB_ACTIONS = int(os.getenv("GITHUB_ACTIONS", False))
 GITHUB_OUTPUT = Path(os.getenv("GITHUB_OUTPUT", TEMP / "GITHUB_OUTPUT.txt"))
 GITHUB_STEP_SUMMARY = Path(
     os.getenv("GITHUB_STEP_SUMMARY", TEMP / "GITHUB_STEP_SUMMARY.txt")
 )
-VERSION_REGEX = re.compile(r"\d+\.\d+\.\d+")
 
 
 @group()
@@ -148,7 +148,6 @@ def coverage_summary(coverage_file: str) -> None:
 def write_changelog_release(version: str) -> None:
     keyword = "## [Unreleased]"
     content = CHANGELOG.read_text()
-    version = VERSION_REGEX.search(version).group()
 
     if not version:
         raise Exception("Missing package version")
@@ -175,8 +174,6 @@ def write_changelog_release(version: str) -> None:
 @option("--version", required=True, help="Version to be set")
 @option("--commit", required=True, help="SHA of the commit")
 def set_release_data(version: str, commit: str) -> None:
-    version = VERSION_REGEX.search(version).group()
-
     save_output("commit", commit)
     save_output("tag", f"v{version}")
     save_output("title", version)
@@ -188,4 +185,7 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        sys.exit(f"ERROR: {str(e)}")
+        if GITHUB_ACTIONS:
+            sys.exit(f"ERROR: {str(e)}")
+        else:
+            raise
