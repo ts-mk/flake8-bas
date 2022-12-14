@@ -359,7 +359,7 @@ class StatementChecker:
         return Error(
             node.lineno,
             node.col_offset,
-            f'{error_code} missing blank line before "{keyword}" statement',
+            f'{error_code} Missing blank line before "{keyword}" statement.',
             type(self),
         )
 
@@ -403,7 +403,7 @@ class StatementChecker:
         return Error(
             next_node.lineno,
             next_node.col_offset,
-            f'{error_code} missing blank line after "{keyword}" statement',
+            f'{error_code} Missing blank line after "{keyword}" statement',
             type(self),
         )
 

@@ -47,7 +47,7 @@ jobs:
           poetry config experimental.new-installer false
 
       - name: Package installation
-        run: poetry install
+        run: poetry install --no-interaction
 
       - name: Set new package version
         if: github.event.inputs.version != 'skip'
