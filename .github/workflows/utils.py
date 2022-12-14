@@ -19,7 +19,9 @@ TEMP.mkdir(exist_ok=True)
 (TEMP / "GITHUB_STEP_SUMMARY.txt").unlink(missing_ok=True)
 
 CHANGELOG = Path(__file__).parents[2] / "CHANGELOG.md"
-GITHUB_ACTIONS = int(os.getenv("GITHUB_ACTIONS", False))
+GITHUB_ACTIONS = {"true": True, "false": False}[
+    os.getenv("GITHUB_ACTIONS", "false").lower()
+]
 GITHUB_OUTPUT = Path(os.getenv("GITHUB_OUTPUT", TEMP / "GITHUB_OUTPUT.txt"))
 GITHUB_STEP_SUMMARY = Path(
     os.getenv("GITHUB_STEP_SUMMARY", TEMP / "GITHUB_STEP_SUMMARY.txt")
