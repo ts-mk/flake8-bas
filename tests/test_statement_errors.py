@@ -50,3 +50,9 @@ class TestStatement:
         assert isinstance(message, str)
         assert message.startswith(f"{StatementErrorCodes.NAMESPACE}{error_code} ")
         assert keyword in message
+
+    def test_error_message_unknown_type(self):
+        statement = Statement("abc", ast.Pass, StatementErrorCodes(0, 0, 0), (1, 1))
+
+        with pytest.raises(AttributeError):
+            statement.error_message("abc")
