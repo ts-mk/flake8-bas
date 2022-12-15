@@ -9,7 +9,7 @@ with suppress(Exception):
 
 
 @dataclass(init=False, frozen=True)
-class StatementErrors:
+class StatementErrorCodes:
     """
     Statement's error codes.
     """
@@ -55,8 +55,33 @@ class Statement:
 
     keyword: str
     cls: type
-    errors: StatementErrors
+    errors: StatementErrorCodes
     python_compatibility: Tuple[int, int]
+
+    def error_message(self, error_type: str) -> str:
+        """
+        Returns an error message for the given error type of this statement.
+
+        :param error_type: "before", "after" or "sibling"
+        :return: message
+        """
+        if error_type == "before":
+            return (
+                f"{self.errors.before} "
+                f'Missing blank line before "{self.keyword}" statement.'
+            )
+        elif error_type == "after":
+            return (
+                f"{self.errors.after} "
+                f'Missing blank line after "{self.keyword}" statement.'
+            )
+        elif error_type == "sibling":
+            return (
+                f"{self.errors.sibling} "
+                f'Missing blank line between "{self.keyword}" statements.'
+            )
+        else:
+            raise AttributeError("Unknown error type")
 
 
 class Error(NamedTuple):
@@ -74,79 +99,79 @@ SIMPLE_STATEMENTS = (
     Statement(
         "assert",
         ast.Assert,
-        StatementErrors(101, 201, 301),
+        StatementErrorCodes(101, 201, 301),
         (3, 5),
     ),
     Statement(
         "break",
         ast.Break,
-        StatementErrors(102, 202, 302),
+        StatementErrorCodes(102, 202, 302),
         (3, 5),
     ),
     Statement(
         "continue",
         ast.Continue,
-        StatementErrors(103, 203, 303),
+        StatementErrorCodes(103, 203, 303),
         (3, 5),
     ),
     Statement(
         "del",
         ast.Delete,
-        StatementErrors(104, 204, 304),
+        StatementErrorCodes(104, 204, 304),
         (3, 5),
     ),
     Statement(
         "global",
         ast.Global,
-        StatementErrors(105, 205, 305),
+        StatementErrorCodes(105, 205, 305),
         (3, 5),
     ),
     Statement(
         "import",
         ast.Import,
-        StatementErrors(106, 206, 306),
+        StatementErrorCodes(106, 206, 306),
         (3, 5),
     ),
     Statement(
         "from import",
         ast.ImportFrom,
-        StatementErrors(107, 207, 307),
+        StatementErrorCodes(107, 207, 307),
         (3, 5),
     ),
     Statement(
         "nonlocal",
         ast.Nonlocal,
-        StatementErrors(108, 208, 308),
+        StatementErrorCodes(108, 208, 308),
         (3, 5),
     ),
     Statement(
         "pass",
         ast.Pass,
-        StatementErrors(109, 209, 309),
+        StatementErrorCodes(109, 209, 309),
         (3, 5),
     ),
     Statement(
         "raise",
         ast.Raise,
-        StatementErrors(110, 210, 310),
+        StatementErrorCodes(110, 210, 310),
         (3, 5),
     ),
     Statement(
         "return",
         ast.Return,
-        StatementErrors(111, 211, 311),
+        StatementErrorCodes(111, 211, 311),
         (3, 5),
     ),
     Statement(
         "yield",
         ast.Yield,
-        StatementErrors(112, 212, 312),
+        StatementErrorCodes(112, 212, 312),
         (3, 5),
     ),
     Statement(
         "yield from",
         ast.YieldFrom,
-        StatementErrors(113, 213, 313),
+        StatementErrorCodes(113, 213, 313),
         (3, 5),
     ),
 )
@@ -154,67 +179,67 @@ COMPOUND_STATEMENTS = (
     Statement(
         "class",
         ast.ClassDef,
-        StatementErrors(501, 601, 701),
+        StatementErrorCodes(501, 601, 701),
         (3, 5),
     ),
     Statement(
         "def",
         ast.FunctionDef,
-        StatementErrors(502, 602, 702),
+        StatementErrorCodes(502, 602, 702),
         (3, 5),
     ),
     Statement(
         "async def",
         ast.AsyncFunctionDef,
-        StatementErrors(503, 603, 703),
+        StatementErrorCodes(503, 603, 703),
         (3, 5),
     ),
     Statement(
         "for",
         ast.For,
-        StatementErrors(504, 604, 704),
+        StatementErrorCodes(504, 604, 704),
         (3, 5),
     ),
     Statement(
         "async for",
         ast.AsyncFor,
-        StatementErrors(505, 605, 705),
+        StatementErrorCodes(505, 605, 705),
         (3, 5),
     ),
     Statement(
         "if",
         ast.If,
-        StatementErrors(506, 606, 706),
+        StatementErrorCodes(506, 606, 706),
         (3, 5),
     ),
     Statement(
         "match",
         getattr(ast, "Match", None),
-        StatementErrors(507, 607, 707),
+        StatementErrorCodes(507, 607, 707),
         (3, 10),
     ),
     Statement(
         "try",
         ast.Try,
-        StatementErrors(508, 608, 708),
+        StatementErrorCodes(508, 608, 708),
         (3, 5),
     ),
     Statement(
         "while",
         ast.While,
-        StatementErrors(509, 609, 709),
+        StatementErrorCodes(509, 609, 709),
         (3, 5),
     ),
     Statement(
         "with",
         ast.With,
-        StatementErrors(510, 610, 710),
+        StatementErrorCodes(510, 610, 710),
         (3, 5),
     ),
     Statement(
         "async with",
         ast.AsyncWith,
-        StatementErrors(511, 611, 711),
+        StatementErrorCodes(511, 611, 711),
         (3, 5),
     ),
 )
@@ -347,19 +372,17 @@ class StatementChecker:
             return
 
         # All valid conditions exhausted so return an error
-        keyword = self.statement_map[on_behalf_of.__class__].keyword
-
         if previous_node and isinstance(
             on_behalf_of, self._real_node(previous_node).__class__
         ):
-            error_code = self.statement_map[on_behalf_of.__class__].errors.sibling
+            error_type = "sibling"
         else:
-            error_code = self.statement_map[on_behalf_of.__class__].errors.before
+            error_type = "before"
 
         return Error(
             node.lineno,
             node.col_offset,
-            f'{error_code} Missing blank line before "{keyword}" statement.',
+            self.statement_map[on_behalf_of.__class__].error_message(error_type),
             type(self),
         )
 
@@ -397,13 +420,10 @@ class StatementChecker:
             return
 
         # All valid conditions exhausted so return an error
-        error_code = self.statement_map[on_behalf_of.__class__].errors.after
-        keyword = self.statement_map[on_behalf_of.__class__].keyword
-
         return Error(
             next_node.lineno,
             next_node.col_offset,
-            f'{error_code} Missing blank line after "{keyword}" statement',
+            self.statement_map[on_behalf_of.__class__].error_message("after"),
             type(self),
         )
 
