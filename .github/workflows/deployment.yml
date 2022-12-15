@@ -71,7 +71,7 @@ jobs:
         run: |
           VERSION=$(poetry version | awk '{print $2}')
 
-          if [[ "$VERSION" =~ [a-z] ]]; then \
+          if ! [[ "$VERSION" =~ [a-z] ]]; then \
             echo "ERROR: Non pre-release version detected."; \
             exit 1; \
           fi

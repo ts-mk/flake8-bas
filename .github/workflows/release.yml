@@ -55,6 +55,15 @@ jobs:
           poetry version ${{ github.event.inputs.version }}
           echo "NEW version: $(poetry version)"
 
+      - name: Version validation
+        run: |
+          VERSION=$(poetry version | awk '{print $2}')
+
+          if [[ "$VERSION" =~ [a-z] ]]; then \
+            echo "ERROR: Pre-release version detected."; \
+            exit 1; \
+          fi
+
       - name: Set version in CHANGELOG.md
         run: poetry run ${{ env.UTILS }} write-changelog-release --version="$(poetry version | awk '{print $2}')"
 
