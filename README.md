@@ -70,7 +70,7 @@ e.g. `BAS2`.
 * *Before Error* - missing line before a statement as long as the preceding element is not a statement of the same type.
 * *After Error* - missing line after a statement as long as the element that follows is not a statement of the same
                   type.
-* *Sibling Error* - missing line between two or more consecutive statements of the same type, e.g. `del`.
+* *Sibling Error* - missing line between two or more consecutive statements of the same type.
 
 ### BAS1xx/BAS2xx/BAS3xx: Simple statements
 
