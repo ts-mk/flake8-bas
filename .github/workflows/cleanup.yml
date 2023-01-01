@@ -1,0 +1,33 @@
+name: Clean-up
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: Number of days to keep
+        required: false
+        type: string
+  schedule:
+    - cron: '0 0 1 * *'
+
+concurrency:
+  group: cleanup
+  cancel-in-progress: true
+
+env:
+  WORKFLOW_LOG_RETENTION: 90
+
+jobs:
+  cleanup:
+    name: Clean-up of Workflow Logs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump workflow context
+        uses: crazy-max/ghaction-dump-context@v1
+
+      - name: Run
+        uses: igorjs/gh-actions-clean-workflow@v3
+        if: github.event.inputs.days != ''
+        with:
+          token: ${{ secrets.GA_TOKEN }}
+          days_old: ${{ github.event.inputs.days || env.WORKFLOW_LOG_RETENTION }}

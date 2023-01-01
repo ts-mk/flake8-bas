@@ -13,17 +13,22 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  COVERAGE_RESULT: ./.local/coverage.xml
+  COVERAGE_RESULT: ./coverage.xml
   POETRY_VERSION: '1.1.13'
-  PYTHON_VERSION: '3.9'
-  PACKAGE_NAME: 'flake8_bbs'
+  # This Python version must match the one in .pre-commit-config.yaml
+  PYTHON_VERSION: '3.10'
+  PACKAGE_NAME: 'flake8_bas'
   SELF: tests.yml
+  UTILS: ./.github/workflows/utils.py
 
 jobs:
   pre-commit:
     name: Pre-commit
     runs-on: ubuntu-latest
     steps:
+      - name: Dump workflow context
+        uses: crazy-max/ghaction-dump-context@v1
+
       - name: Git checkout
         uses: actions/checkout@v3
 
@@ -33,12 +38,14 @@ jobs:
         with:
           path: ./.local/result_cache
           key: >-
-            pre-commit-result-$${{ matrix.python }}-$${{ matrix.flake8 }}-${{ github.job }}-${{ github.ref }}-${{
+            ${{ github.job }}-result-${{ env.PYTHON_VERSION }}-${{ github.ref }}-${{
               hashFiles(
                 format('.github/workflows/{0}', env.SELF),
                 format('{0}/**.py', env.PACKAGE_NAME),
                 'tests/**',
-                'poetry.lock'
+                'poetry.lock',
+                '.pre-commit-config.yaml',
+                'setup.cfg'
               )
             }}
 
@@ -68,7 +75,7 @@ jobs:
         with:
           path: ./.local/result_cache
           key: >-
-            unit-result-$${{ matrix.python }}-$${{ matrix.flake8 }}--${{ github.job }}-${{ github.ref }}-${{
+            ${{ github.job }}-result-${{ env.PYTHON_VERSION }}-${{ github.ref }}-${{
               hashFiles(
                 format('.github/workflows/{0}', env.SELF),
                 format('{0}/**.py', env.PACKAGE_NAME),
@@ -92,9 +99,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/pypoetry/virtualenvs
-          key: unit-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-${{ hashFiles('poetry.lock') }}
+          key: ${{ github.job }}-poetry-${{ env.PYTHON_VERSION }}-${{ hashFiles('poetry.lock') }}
           restore-keys: |
-            unit-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-
+            ${{ github.job }}-poetry-${{ env.PYTHON_VERSION }}-
 
       - name: Poetry installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
@@ -102,9 +109,15 @@ jobs:
         with:
           poetry-version: ${{ env.POETRY_VERSION }}
 
+      - name: Poetry setup
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        run: |
+          poetry config virtualenvs.create true
+          poetry config experimental.new-installer false
+
       - name: Package installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        run: poetry install --remove-untracked
+        run: poetry install --no-interaction --remove-untracked
 
       - name: Run
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
@@ -116,6 +129,20 @@ jobs:
           --cov-report=term
           ./tests/
 
+      - name: Store the test coverage result
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: ${{ env.COVERAGE_RESULT }}
+          retention-days: 90
+
+      - name: Add coverage into job's summary
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        run: >-
+          poetry run ${{ env.UTILS }} coverage-summary
+          --coverage_file="${GITHUB_WORKSPACE}/${{ env.COVERAGE_RESULT }}"
+
   compatibility:
     name: Compatibility tests
     runs-on: ubuntu-latest
@@ -123,7 +150,8 @@ jobs:
       fail-fast: false
       matrix:
         python: ['3.8', '3.9', '3.10', '3.11']
-        flake8: ['4.0.0', '5.0.0']
+        # Version 5.0.0 of Flake8 is buggy and would output duplicate errors
+        flake8: ['3.8.0', '4.0.0', '5.0.1']
     steps:
       - name: Dump workflow context
         uses: crazy-max/ghaction-dump-context@v1
@@ -137,7 +165,7 @@ jobs:
         with:
           path: ./.local/result_cache
           key: >-
-            compat-result-$${{ matrix.python }}-$${{ matrix.flake8 }}--${{ github.job }}-${{ github.ref }}-${{
+            ${{ github.job }}-result-${{ matrix.python }}-${{ matrix.flake8 }}-${{ github.ref }}-${{
               hashFiles(
                 format('.github/workflows/{0}', env.SELF),
                 format('{0}/**.py', env.PACKAGE_NAME),
@@ -161,9 +189,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/pypoetry/virtualenvs
-          key: compat-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-${{ hashFiles('poetry.lock') }}
+          key: ${{ github.job }}-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-${{ hashFiles('poetry.lock') }}
           restore-keys: |
-            compat-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-
+            ${{ github.job }}-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-
 
       - name: Poetry installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
@@ -171,12 +199,31 @@ jobs:
         with:
           poetry-version: ${{ env.POETRY_VERSION }}
 
+      - name: Poetry setup
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        run: |
+          poetry config virtualenvs.create true
+          poetry config experimental.new-installer false
+
       - name: Package installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
         run: |
-          poetry install --no-dev --remove-untracked
-          poetry add "flake8==${{ matrix.flake8 }}"
+          poetry add --lock "flake8==${{ matrix.flake8 }}" "click>=8.1.0,<9.0.0"
+          poetry install --no-interaction --no-dev
+          echo -e "\nFlake8 version: $(poetry run flake8 --version)"
 
-      - name: Run
-        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        run: poetry run flake8 ./tests/fixtures/valid
+      - name: Run (Python <3.10)
+        if: >-
+          (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch') &&
+          (matrix.python == '3.8' || matrix.python == '3.9')
+        run: >-
+          poetry run flake8 --isolated --select=BAS --exclude='*match*.py' ./tests/fixtures/*/* |
+          poetry run ${{ env.UTILS }} assert-error-count --directory=./tests/fixtures/invalid --exclude='.*match.*'
+
+      - name: Run (Python >=3.10)
+        if: >-
+          (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch') &&
+          matrix.python != '3.8' && matrix.python != '3.9'
+        run: >-
+          poetry run flake8 --isolated --select=BAS ./tests/fixtures/*/* |
+          poetry run ${{ env.UTILS }} assert-error-count --directory=./tests/fixtures/invalid

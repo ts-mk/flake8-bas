@@ -1,0 +1,79 @@
+name: Code coverage
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - 'flake8_bas/**'
+      - 'src/**'
+
+concurrency:
+  group: coverage-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  COVERAGE_RESULT: ./coverage.xml
+  POETRY_VERSION: '1.1.13'
+  PYTHON_VERSION: '3.10'
+  PACKAGE_NAME: 'flake8_bas'
+  SELF: coverage.yml
+
+jobs:
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump workflow context
+        uses: crazy-max/ghaction-dump-context@v1
+
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Python setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Virtualenvs cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: poetry-${{ env.PYTHON_VERSION }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            poetry-${{ env.PYTHON_VERSION }}-
+
+      - name: Poetry installation
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: ${{ env.POETRY_VERSION }}
+
+      - name: Poetry setup
+        run: |
+          poetry config virtualenvs.create true
+          poetry config experimental.new-installer false
+
+      - name: Package installation
+        run: poetry install --remove-untracked
+
+      - name: Run
+        run: >-
+          poetry run pytest
+          --tb=short
+          --cov=${{ env.PACKAGE_NAME }}
+          --cov-report=xml:${{ env.COVERAGE_RESULT }}
+          --cov-report=term
+          ./tests/
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ${{ env.COVERAGE_RESULT }}
+
+      - name: Store the test coverage result
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: ${{ env.COVERAGE_RESULT }}
+          retention-days: 90

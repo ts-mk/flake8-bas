@@ -1,0 +1,62 @@
+[tool.poetry]
+name = "flake8-bas"
+version = "0.1.0-alpha.7"
+description = "Flake8 extension that checks for blank lines around (compound) statements."
+authors = ["Tomas Mrozek <tm@nohup.run>"]
+maintainers = ["Tomas Mrozek <tm@nohup.run>"]
+repository = "https://github.com/ts-mk/flake8-bas/"
+documentation = "https://github.com/ts-mk/flake8-bas/blob/master/README.md"
+readme = "README.md"
+license = "MIT"
+classifiers = [
+    'Environment :: Console',
+    'Framework :: Flake8',
+    'Operating System :: OS Independent',
+    'Topic :: Software Development :: Documentation',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Topic :: Software Development :: Quality Assurance',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+]
+
+[tool.poetry.dependencies]
+python = ">=3.8"
+flake8 = ">=3.8.0"
+setuptools = "*"
+
+[tool.poetry.dev-dependencies]
+black = "22.10.0"
+click = ">=8.1.0,<9.0.0"
+pre-commit = ">=2.10.0,<3.0"
+pytest = ">=7.0.0,<8.0.0"
+pytest-cov = ">=3.0.0,<4.0.0"
+yappi = ">=1.4.0,<2.0.0"
+
+[tool.poetry.plugins."flake8.extension"]
+BAS = "flake8_bas:StatementChecker"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+skip-numeric-underscore-normalization = true
+force-exclude = ".*tests/fixtures/.*"
+
+[tool.interrogate]
+color = true
+exclude = ["tests", ".local"]
+fail-under = 100
+ignore-init-method = true
+ignore-init-module = true
+ignore-magic = true
+ignore-module = true
+ignore-nested-functions = true
+ignore-private = false
+ignore-property-decorators = true
+ignore-semiprivate = false
+quiet = false
+verbose = 2
