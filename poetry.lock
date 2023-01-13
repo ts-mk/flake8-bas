@@ -63,7 +63,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7
 
 [[package]]
 name = "coverage"
-version = "6.5.0"
+version = "7.0.5"
 description = "Code coverage measurement for Python"
 category = "dev"
 optional = false
@@ -332,21 +332,10 @@ platformdirs = ">=2.4,<3"
 docs = ["proselint (>=0.13)", "sphinx (>=5.3)", "sphinx-argparse (>=0.3.2)", "sphinx-rtd-theme (>=1)", "towncrier (>=22.8)"]
 testing = ["coverage (>=6.2)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7)", "packaging (>=21.3)", "pytest (>=7.0.1)", "pytest-env (>=0.6.2)", "pytest-freezegun (>=0.4.2)", "pytest-mock (>=3.6.1)", "pytest-randomly (>=3.10.3)", "pytest-timeout (>=2.1)"]
 
-[[package]]
-name = "yappi"
-version = "1.4.0"
-description = "Yet Another Python Profiler"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.extras]
-test = ["gevent (>=20.6.2)"]
-
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8"
-content-hash = "8670df67dd45d8d8f7e0592ffbd5f1695f148e201b2ab5725f6da7c98fe90246"
+content-hash = "f1717d64bcea4ec0e1e101ed5bb391a483ca826b82b97e571226ab1fe7e1a33a"
 
 [metadata.files]
 attrs = []
@@ -434,4 +423,3 @@ tomli = [
 ]
 typing-extensions = []
 virtualenv = []
-yappi = []

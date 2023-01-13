@@ -155,11 +155,13 @@ def write_changelog_release(version: str) -> None:
         raise Exception("Missing package version")
 
     # If the version already exists in the changelog, do nothing
-    if f"## [{version}]" in content and keyword not in content:
+    if f"## [{version}]" in content:
         print(
             f"Changelog entry for version {version} already exists.",
             f"Skipping modification of {CHANGELOG.name}.",
         )
+
+        return
 
     if keyword not in content:
         raise Exception(f"{keyword} not found in {CHANGELOG.name}")

@@ -345,16 +345,6 @@ class StatementChecker:
             self.nodes[node.index - 1] if node.index - 1 >= 0 else None
         )
 
-        # A (string) constant expression is allowed to be directly above the node
-        # but then it needs to match all the other rules so we need to do
-        # a look behind (or rather above)
-        if (
-            previous_node
-            and isinstance(previous_node, ast.Expr)
-            and isinstance(getattr(previous_node, "value", None), ast.Constant)
-        ):
-            return self._error_before(node=previous_node, on_behalf_of=on_behalf_of)
-
         # Blank line found above the statement
         if (
             previous_node
@@ -370,6 +360,16 @@ class StatementChecker:
         # a blank line
         if self._is_nth_child(node=node, n=0):
             return
+
+        # A (string) constant expression is allowed to be directly above the node
+        # but then it needs to match all the other rules so we need to do
+        # a look behind (or rather above)
+        if (
+            previous_node
+            and isinstance(previous_node, ast.Expr)
+            and isinstance(getattr(previous_node, "value", None), ast.Constant)
+        ):
+            return self._error_before(node=previous_node, on_behalf_of=on_behalf_of)
 
         # All valid conditions exhausted so return an error
         if previous_node and isinstance(

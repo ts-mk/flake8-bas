@@ -77,3 +77,8 @@ jobs:
           name: coverage
           path: ${{ env.COVERAGE_RESULT }}
           retention-days: 90
+
+      - name: Add coverage into job's summary
+        run: >-
+          poetry run ${{ env.UTILS }} coverage-summary
+          --coverage_file="${GITHUB_WORKSPACE}/${{ env.COVERAGE_RESULT }}"
