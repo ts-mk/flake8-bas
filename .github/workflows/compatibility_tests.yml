@@ -6,7 +6,7 @@ on:
     - cron: '0 12 * * 1,5'
 
 concurrency:
-  group: tests-${{ github.ref }}
+  group: compatibility_tests-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -18,7 +18,7 @@ env:
 
 jobs:
   compatibility:
-    name: Test of the latest version of Flake8
+    name: Latest Flake8
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -39,14 +39,6 @@ jobs:
       - name: Setup of a local directory
         run: mkdir ./.local
 
-      - name: Virtualenvs cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ github.job }}-poetry-$${{ matrix.python }}${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            ${{ github.job }}-poetry-$${{ matrix.python }}-
-
       - name: Poetry installation
         uses: abatilo/actions-poetry@v2.0.0
         with:
@@ -59,7 +51,7 @@ jobs:
 
       - name: Package installation
         run: |
-          poetry add --lock "flake8"
+          poetry add --lock "flake8==*"
           poetry install --remove-untracked --no-interaction --without dev,tests
           echo -e "\nFlake8 version: $(poetry run flake8 --version)"
 
