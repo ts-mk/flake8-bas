@@ -7,7 +7,6 @@ on:
       - master
     paths:
       - 'flake8_bas/**'
-      - 'src/**'
 
 concurrency:
   group: coverage-${{ github.ref }}
@@ -15,7 +14,7 @@ concurrency:
 
 env:
   COVERAGE_RESULT: ./coverage.xml
-  POETRY_VERSION: '1.1.13'
+  POETRY_VERSION: '1.3.2'
   PYTHON_VERSION: '3.10'
   PACKAGE_NAME: 'flake8_bas'
   SELF: coverage.yml
@@ -56,7 +55,7 @@ jobs:
           poetry config experimental.new-installer false
 
       - name: Package installation
-        run: poetry install --remove-untracked
+        run: poetry install --remove-untracked --no-interaction --without dev
 
       - name: Run
         run: >-

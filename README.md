@@ -15,8 +15,7 @@
 
 However, adding blank lines before and after compound statements (e.g. `if/else` block) as well as some simple
 statements (e.g. `return`) might improve code readability which is otherwise hindered despite syntax highlighting
-that modern code editors provide, as demonstrated in the following example where it might not be immediately apparent
-that this is not one `if/else` statement but an `if` statement followed by a `for/else` statement:
+that modern code editors provide, as demonstrated in the following example:
 
 ```python
 if 1 == 1:
@@ -27,6 +26,9 @@ else:
     print(4)
 ```
 
+...where it might not be immediately apparent that this is not one `if/else` statement but an `if` statement followed by
+a `for/else` statement.
+
 This Flake8 plugin therefore checks for a blank line before/after each statement as long as it's **not the first/last
 line of code within a module** and **not the first/last statement within a compound statement**.
 
@@ -34,7 +36,7 @@ line of code within a module** and **not the first/last statement within a compo
 ## Requirements
 
 * Python >= 3.8
-* flake8 >= 3.8.0
+* Flake8 >= 3.8.0
 
 
 ## Installation
