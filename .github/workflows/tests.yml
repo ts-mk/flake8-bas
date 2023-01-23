@@ -117,7 +117,7 @@ jobs:
 
       - name: Package installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        run: poetry install --remove-untracked --no-interaction --without dev
+        run: poetry install --sync --no-interaction --without dev
 
       - name: Run
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
@@ -209,7 +209,7 @@ jobs:
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
         run: |
           poetry add --lock "flake8==${{ matrix.flake8 }}"
-          poetry install --remove-untracked --no-interaction --without dev,tests
+          poetry install --sync --no-interaction --without dev,test
           echo -e "\nFlake8 version: $(poetry run flake8 --version)"
 
       - name: Run (Python <3.10)

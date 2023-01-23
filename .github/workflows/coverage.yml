@@ -55,7 +55,7 @@ jobs:
           poetry config experimental.new-installer false
 
       - name: Package installation
-        run: poetry install --remove-untracked --no-interaction --without dev
+        run: poetry install --sync --no-interaction --without dev
 
       - name: Run
         run: >-
