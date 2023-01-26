@@ -71,6 +71,12 @@ except Exception:
 
     if 2 == 2:
         pass
+finally:
+    if 1 == 1:
+        pass
+
+    if 2 == 2:
+        pass
 
 # Inline if/else should not be affected
 b = 1

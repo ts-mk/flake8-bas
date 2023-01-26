@@ -49,3 +49,7 @@ except Exception:
     assert 1 == 1
 
     assert 1 == 1
+finally:
+    assert 1 == 1
+
+    assert 1 == 1

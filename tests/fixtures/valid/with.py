@@ -71,3 +71,9 @@ except Exception:
 
     with f() as b:
         pass
+finally:
+    with f() as b:
+        pass
+
+    with f() as b:
+        pass

@@ -29,13 +29,16 @@ for a in range(10):  # Check 5
 
         continue
 
-try: # Check 8
-    for a in range(10):
+for a in range(10): # Check 8
+    try:
         continue
 
         continue
-except Exception:
-    for a in range(10):
+    except Exception:
+        continue
+
+        continue
+    finally:
         continue
 
         continue

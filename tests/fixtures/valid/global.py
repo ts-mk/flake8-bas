@@ -49,3 +49,7 @@ except Exception:
     global v
 
     global v
+finally:
+    global v
+
+    global v

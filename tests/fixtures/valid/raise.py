@@ -49,3 +49,7 @@ except Exception:
     raise Exception()
 
     raise Exception()
+finally:
+    raise Exception()
+
+    raise Exception()

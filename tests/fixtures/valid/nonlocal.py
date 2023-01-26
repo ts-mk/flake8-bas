@@ -48,3 +48,7 @@ def f():  # Check 8
         nonlocal v
 
         nonlocal v
+    finally:
+        nonlocal v
+
+        nonlocal v

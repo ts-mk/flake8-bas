@@ -71,3 +71,9 @@ except Exception:
 
     def f():
         pass
+finally:
+    def f():
+        pass
+
+    def f():
+        pass

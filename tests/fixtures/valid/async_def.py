@@ -71,3 +71,9 @@ except Exception:
 
     async def f():
         pass
+finally:
+    async def f():
+        pass
+
+    async def f():
+        pass

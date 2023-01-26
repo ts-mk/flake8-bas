@@ -328,6 +328,12 @@ class StatementChecker:
         if len(getattr(parent_node, "body", [])) and parent_node.body[n] is node:
             return True
 
+        if (
+            len(getattr(parent_node, "finalbody", []))
+            and parent_node.finalbody[n] is node
+        ):
+            return True
+
         if len(getattr(parent_node, "orelse", [])) and parent_node.orelse[n] is node:
             return True
 

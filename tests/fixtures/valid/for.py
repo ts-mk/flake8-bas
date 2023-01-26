@@ -71,6 +71,12 @@ except Exception:
 
     for i in [1, 2]:
         pass
+finally:
+    for i in [1, 2]:
+        pass
+
+    for i in [1, 2]:
+        pass
 
 # Comprehension should not be affected
 b = 1

@@ -48,3 +48,7 @@ def f():  # Check 8
         yield from [1, 2]
 
         yield from [1, 2]
+    finally:
+        yield from [1, 2]
+
+        yield from [1, 2]

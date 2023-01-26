@@ -71,3 +71,9 @@ except Exception:
 
     class C:
         pass
+finally:
+    class C:
+        pass
+
+    class C:
+        pass

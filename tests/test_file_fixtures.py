@@ -19,7 +19,7 @@ def test_valid_statements(statement_test: StatementTest):
 
     result = statement_test.run()
 
-    assert len(result) == 0, ", ".join(
+    assert len(result) == 0, "Unexpected error(s) in " + ", ".join(
         f"{statement_test.file.name}:{e.lineno}:{e.col_offset}" for e in result
     )
 

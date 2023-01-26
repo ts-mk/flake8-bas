@@ -47,3 +47,7 @@ def f():  # Check 8
         return 1
 
         return 1
+    finally:
+        return 1
+
+        return 1

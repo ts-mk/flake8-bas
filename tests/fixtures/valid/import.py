@@ -49,3 +49,7 @@ except Exception:
     import os
 
     import os
+finally:
+    import os
+
+    import os

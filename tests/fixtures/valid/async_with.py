@@ -71,3 +71,9 @@ except Exception:
 
     async with f() as b:
         pass
+finally:
+    async with f() as b:
+        pass
+
+    async with f() as b:
+        pass

@@ -49,3 +49,7 @@ except Exception:
     del a
 
     del a
+finally:
+    del a
+
+    del a

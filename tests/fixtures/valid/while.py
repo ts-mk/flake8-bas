@@ -71,3 +71,9 @@ except Exception:
 
     while True:
         pass
+finally:
+    while True:
+        pass
+
+    while True:
+        pass

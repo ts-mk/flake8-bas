@@ -71,3 +71,9 @@ except Exception:
 
     async for i in [1, 2]:
         pass
+finally:
+    async for i in [1, 2]:
+        pass
+
+    async for i in [1, 2]:
+        pass

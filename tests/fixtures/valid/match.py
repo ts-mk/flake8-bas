@@ -93,3 +93,11 @@ except:
     match True:
         case True:
             pass
+finally:
+    match True:
+        case True:
+            pass
+
+    match True:
+        case True:
+            pass

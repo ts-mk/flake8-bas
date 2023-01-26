@@ -48,3 +48,7 @@ def f():  # Check 8
         yield 1
 
         yield 1
+    finally:
+        yield 1
+
+        yield 1

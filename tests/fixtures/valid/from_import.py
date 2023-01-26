@@ -49,3 +49,7 @@ except Exception:
     from os import environ
 
     from os import environ
+finally:
+    from os import environ
+
+    from os import environ

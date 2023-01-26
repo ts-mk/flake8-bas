@@ -29,13 +29,16 @@ for a in range(10):  # Check 5
 
         break
 
-try: # Check 8
-    for a in range(10):
+for a in range(10): # Check 8
+    try:
         break
 
         break
-except Exception:
-    for a in range(10):
+    except Exception:
+        break
+
+        break
+    finally:
         break
 
         break
