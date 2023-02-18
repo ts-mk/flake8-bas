@@ -14,23 +14,27 @@ from click import Argument, Context, argument, get_text_stream, group, option
 
 # Temp directory and files in it are used only when running this script locally
 TEMP = Path(__file__).parents[2] / "tmp"
-TEMP.mkdir(exist_ok=True)
-(TEMP / "GITHUB_OUTPUT.txt").unlink(missing_ok=True)
-(TEMP / "GITHUB_STEP_SUMMARY.txt").unlink(missing_ok=True)
 
 CHANGELOG = Path(__file__).parents[2] / "CHANGELOG.md"
 GITHUB_ACTIONS = {"true": True, "false": False}[
     os.getenv("GITHUB_ACTIONS", "false").lower()
 ]
-GITHUB_OUTPUT = Path(os.getenv("GITHUB_OUTPUT", TEMP / "GITHUB_OUTPUT.txt"))
-GITHUB_STEP_SUMMARY = Path(
-    os.getenv("GITHUB_STEP_SUMMARY", TEMP / "GITHUB_STEP_SUMMARY.txt")
-)
 
 
 @group()
 def main() -> None:
-    pass
+    global GITHUB_OUTPUT
+    GITHUB_OUTPUT = Path(os.getenv("GITHUB_OUTPUT", TEMP / "GITHUB_OUTPUT.txt"))
+
+    global GITHUB_STEP_SUMMARY
+    GITHUB_STEP_SUMMARY = Path(
+        os.getenv("GITHUB_STEP_SUMMARY", TEMP / "GITHUB_STEP_SUMMARY.txt")
+    )
+
+    TEMP.mkdir(exist_ok=True)
+    TEMP.mkdir(exist_ok=True)
+    (TEMP / "GITHUB_OUTPUT.txt").unlink(missing_ok=True)
+    (TEMP / "GITHUB_STEP_SUMMARY.txt").unlink(missing_ok=True)
 
 
 def stdin(ctx: Context, param: Argument, value: Optional[str] = None) -> Optional[str]:

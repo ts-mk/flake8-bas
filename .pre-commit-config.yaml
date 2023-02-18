@@ -37,4 +37,4 @@ repos:
     rev: v0.1
     hooks:
       - id: xenon
-        args: ["--max-modules=C", "--max-absolute=D", "--exclude=tests/*"]
+        args: ["--max-modules=C", "--max-absolute=C", "--exclude=tests/*"]

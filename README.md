@@ -50,7 +50,7 @@ pip install flake8-bas
 ### Poetry
 
 ```bash
-poetry add --dev flake8-bas
+poetry add flake8-bas
 ```
 
 
