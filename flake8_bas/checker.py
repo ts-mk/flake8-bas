@@ -1,8 +1,8 @@
 import ast
 import re
 from contextlib import suppress
-from dataclasses import dataclass, astuple
-from typing import Generator, List, Optional, NamedTuple, Tuple
+from dataclasses import astuple, dataclass
+from typing import Generator, List, NamedTuple, Optional, Tuple
 
 with suppress(Exception):
     import pkg_resources

@@ -3,7 +3,7 @@ from typing import Callable
 
 import pytest
 
-from .conftest import load_files, parametrized_name, StatementTest
+from .conftest import StatementTest, load_files, parametrized_name
 
 
 @pytest.mark.parametrize(
