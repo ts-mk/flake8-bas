@@ -52,7 +52,7 @@ jobs:
       - name: Package installation
         run: |
           poetry add --lock "flake8==*"
-          poetry install --remove-untracked --no-interaction --without dev,test
+          poetry install --sync --no-interaction --without dev,test
           echo -e "\nFlake8 version: $(poetry run flake8 --version)"
 
       - name: Run (Python <3.10)
