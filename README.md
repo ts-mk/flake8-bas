@@ -35,7 +35,7 @@ line of code within a module** and **not the first/last statement within a compo
 
 ## Requirements
 
-* Python >= 3.8
+* Python >= 3.8.1
 * Flake8 >= 3.8.0
 
 
