@@ -1,7 +1,7 @@
 # Flake8 - check for blank lines around statements
 
-![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)
 ![PyPI](https://img.shields.io/pypi/v/flake8-bas.svg?label=PyPI&logo=PyPI&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-blue?logo=opensourceinitiative&logoColor=white)
 ![codecov](https://codecov.io/gh/ts-mk/flake8-bas/branch/master/graph/badge.svg?token=PI2I083V09)
 ![CI](https://github.com/ts-mk/flake8-bas/actions/workflows/tests.yml/badge.svg)
