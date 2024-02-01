@@ -131,7 +131,7 @@ jobs:
 
       - name: Store the test coverage result
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage
           path: ${{ env.COVERAGE_RESULT }}
@@ -150,8 +150,13 @@ jobs:
       fail-fast: false
       matrix:
         # Version 5.0.0 of Flake8 is buggy and would output duplicate errors
-        flake8: ['3.8.0', '4.0.0', '5.0.1', '6.0.0', '*']
+        flake8: ['3.8.0', '4.0.0', '5.0.1', '6.0.0', '7.0.0', '*']
         python: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        exclude:
+          - flake8: '3.8.0'
+            python: '3.12'
+          - flake8: '4.0.0'
+            python: '3.12'
     steps:
       - name: Dump workflow context
         uses: crazy-max/ghaction-dump-context@v1
