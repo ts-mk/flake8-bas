@@ -30,11 +30,11 @@ jobs:
         uses: crazy-max/ghaction-dump-context@v1
 
       - name: Git checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Result cache
         id: result-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./.local/result_cache
           key: >-
@@ -51,7 +51,7 @@ jobs:
 
       - name: Python setup
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -67,11 +67,11 @@ jobs:
         uses: crazy-max/ghaction-dump-context@v1
 
       - name: Git checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Result cache
         id: result-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./.local/result_cache
           key: >-
@@ -86,7 +86,7 @@ jobs:
 
       - name: Python setup
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -96,7 +96,7 @@ jobs:
 
       - name: Virtualenvs cache
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pypoetry/virtualenvs
           key: ${{ github.job }}-poetry-${{ env.PYTHON_VERSION }}-${{ hashFiles('poetry.lock') }}
@@ -151,17 +151,17 @@ jobs:
       matrix:
         # Version 5.0.0 of Flake8 is buggy and would output duplicate errors
         flake8: ['3.8.0', '4.0.0', '5.0.1', '6.0.0', '*']
-        python: ['3.8', '3.9', '3.10', '3.11']
+        python: ['3.8', '3.9', '3.10', '3.11', '3.12']
     steps:
       - name: Dump workflow context
         uses: crazy-max/ghaction-dump-context@v1
 
       - name: Git checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Result cache
         id: result-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./.local/result_cache
           key: >-
@@ -176,7 +176,7 @@ jobs:
 
       - name: Python setup
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
 
@@ -186,7 +186,7 @@ jobs:
 
       - name: Virtualenvs cache
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pypoetry/virtualenvs
           key: ${{ github.job }}-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-${{ hashFiles('poetry.lock') }}

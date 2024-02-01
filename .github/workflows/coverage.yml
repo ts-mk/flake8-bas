@@ -29,15 +29,15 @@ jobs:
         uses: crazy-max/ghaction-dump-context@v1
 
       - name: Git checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Python setup
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Virtualenvs cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pypoetry/virtualenvs
           key: poetry-${{ env.PYTHON_VERSION }}-${{ hashFiles('poetry.lock') }}
