@@ -54,11 +54,6 @@ poetry add flake8-bas
 ```
 
 
-## Use in production
-
-Until version 1.0.0 is reached, this plugin is considered to be **NOT ready for production**.
-
-
 ## Statements and their error codes
 
 The statements are split into different categories based on whether they are
