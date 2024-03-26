@@ -67,10 +67,7 @@ def save_output(name: str, value: Union[str, int, float]) -> None:
         delimiter = "EOF"
 
     with GITHUB_OUTPUT.open(mode="a") as f:
-        if "\n" in value:
-            f.write(f"{name}<<{delimiter}\n{value.strip()}\n{delimiter}\n")
-        else:
-            f.write(f"{name}={value.strip()}\n")
+        f.write(f"{name}<<{delimiter}\n{value.strip()}\n{delimiter}\n")
 
 
 def add_summary(text: str) -> None:

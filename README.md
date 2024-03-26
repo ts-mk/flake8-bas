@@ -58,7 +58,7 @@ poetry add flake8-bas
 
 The statements are split into different categories based on whether they are
 [simple statements](https://docs.python.org/3.11/reference/simple_stmts.html) or
-[compound statements](https://docs.python.org/3.11/reference/compound_stmts.html), and whether the error occurs between
+[compound statements](https://docs.python.org/3.11/reference/compound_stmts.html), and whether an error occurs between
 two statements of the same type or not. This allows you to filter entire groups using `BAS` and the first digit,
 e.g. `BAS2`.
 
@@ -139,7 +139,7 @@ The plugin checks for blank lines around **every statement**. There are no custo
 could simply ignore some errors. This system has benefits as well as drawbacks.
 
 The benefit is that you could take advantage of Flake8's `ignore` and `per-file-ignores` (flake8 >= 3.7.0) config
-options and have a different behaviour for a different set of files:
+options and have a different behaviour applied to each set of files:
 
 ```ini
 [flake8]
@@ -156,7 +156,7 @@ they are undesirable, make little sense, or the same/conflicting checks might al
 
 ### Recommended exclusions
 
-Only compound statements plus `return` and `yield` would raise errors.
+Only compound statements plus `return` and `yield` would raise errors:
 
 ```ini
 [flake8]
@@ -165,7 +165,7 @@ ignore = BAS10, BAS110, BAS20, BAS210, BAS30, BAS310
 
 ### All simple statements excluded
 
-Only compound statements would raise errors.
+Only compound statements would raise errors:
 
 ```ini
 [flake8]
