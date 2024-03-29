@@ -273,7 +273,7 @@ class StatementChecker:
         ]
 
     @classmethod
-    def _indexed_nodes(cls, module_tree: ast.Module) -> list[ast.AST]:
+    def _indexed_nodes(cls, module_tree: ast.Module) -> List[ast.AST]:
         """
         Takes an AST tree and turns it into a list of nodes each having
         an index number.
