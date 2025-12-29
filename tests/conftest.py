@@ -3,7 +3,7 @@ import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable
 
 import pytest
 from _pytest.fixtures import SubRequest
@@ -46,7 +46,7 @@ def parametrized_name(testcase: Any) -> str:
         return str(testcase)
 
 
-def load_files(subdirectory: Optional[str] = "") -> List[Path]:
+def load_files(subdirectory: str | None = "") -> list[Path]:
     """
     Loads files fixtures subdirectory taking into account whether the statement exists
     in the current version of Python.
