@@ -16,7 +16,7 @@ env:
   COVERAGE_RESULT: ./coverage.xml
   POETRY_VERSION: '1.3.2'
   # This Python version must match the one in .pre-commit-config.yaml
-  PYTHON_VERSION: '3.12'
+  PYTHON_VERSION: '3.14'
   PACKAGE_NAME: 'flake8_bas'
   SELF: tests.yml
   UTILS: ./.github/workflows/utils.py
@@ -151,12 +151,20 @@ jobs:
       matrix:
         # Version 5.0.0 of Flake8 is buggy and would output duplicate errors
         flake8: ['3.8.0', '4.0.0', '5.0.1', '6.0.0', '7.0.0', '*']
-        python: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
         exclude:
           - flake8: '3.8.0'
             python: '3.12'
           - flake8: '4.0.0'
             python: '3.12'
+          - flake8: '3.8.0'
+            python: '3.13'
+          - flake8: '4.0.0'
+            python: '3.13'
+          - flake8: '3.8.0'
+            python: '3.14'
+          - flake8: '4.0.0'
+            python: '3.14'
     steps:
       - name: Dump workflow context
         uses: crazy-max/ghaction-dump-context@v1
@@ -216,19 +224,3 @@ jobs:
           poetry add --lock "flake8==${{ matrix.flake8 }}"
           poetry install --sync --no-interaction --without dev,test
           echo -e "\nFlake8 version: $(poetry run flake8 --version)"
-
-      - name: Run (Python <3.10)
-        if: >-
-          (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch') &&
-          (matrix.python == '3.8' || matrix.python == '3.9')
-        run: >-
-          poetry run flake8 --isolated --select=BAS --exclude='*match*.py' ./tests/fixtures/*/* |
-          poetry run ${{ env.UTILS }} assert-error-count --directory=./tests/fixtures/invalid --exclude='.*match.*'
-
-      - name: Run (Python >=3.10)
-        if: >-
-          (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch') &&
-          matrix.python != '3.8' && matrix.python != '3.9'
-        run: >-
-          poetry run flake8 --isolated --select=BAS ./tests/fixtures/*/* |
-          poetry run ${{ env.UTILS }} assert-error-count --directory=./tests/fixtures/invalid

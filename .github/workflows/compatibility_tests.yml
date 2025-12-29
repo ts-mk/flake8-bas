@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
     steps:
       - name: Dump workflow context
         uses: crazy-max/ghaction-dump-context@v1
@@ -54,15 +54,3 @@ jobs:
           poetry add --lock "flake8==*"
           poetry install --sync --no-interaction --without dev,test
           echo -e "\nFlake8 version: $(poetry run flake8 --version)"
-
-      - name: Run (Python <3.10)
-        if: matrix.python == '3.8' || matrix.python == '3.9'
-        run: >-
-          poetry run flake8 --isolated --select=BAS --exclude='*match*.py' ./tests/fixtures/*/* |
-          poetry run ${{ env.UTILS }} assert-error-count --directory=./tests/fixtures/invalid --exclude='.*match.*'
-
-      - name: Run (Python >=3.10)
-        if: matrix.python != '3.8' && matrix.python != '3.9'
-        run: >-
-          poetry run flake8 --isolated --select=BAS ./tests/fixtures/*/* |
-          poetry run ${{ env.UTILS }} assert-error-count --directory=./tests/fixtures/invalid

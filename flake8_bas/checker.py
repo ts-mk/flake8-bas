@@ -2,7 +2,7 @@ import ast
 import re
 from contextlib import suppress
 from dataclasses import astuple, dataclass
-from typing import Generator, List, NamedTuple, Optional, Tuple
+from typing import Generator, NamedTuple
 
 with suppress(Exception):
     import pkg_resources
@@ -38,7 +38,7 @@ class StatementErrorCodes:
         """
         return len(self.__dict__)
 
-    def astuple(self) -> Tuple[str, ...]:
+    def astuple(self) -> tuple[str, ...]:
         """
         Turns the object into a tuple.
 
@@ -47,7 +47,7 @@ class StatementErrorCodes:
         return astuple(self)
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Statement:
     """
     Python's statement data.
@@ -56,7 +56,7 @@ class Statement:
     keyword: str
     cls: type
     errors: StatementErrorCodes
-    python_compatibility: Tuple[int, int]
+    python_compatibility: tuple[int, int]
 
     def error_message(self, error_type: str) -> str:
         """
@@ -251,6 +251,8 @@ class StatementChecker:
     Checks for blank lines before statements.
     """
 
+    __slots__ = ("statement_map", "nodes", "blank_lines")
+
     BLANK_LINE_RE = re.compile(r"^\s*\n")
 
     try:
@@ -259,7 +261,7 @@ class StatementChecker:
     except Exception:
         version = "?.?.?"
 
-    def __init__(self, tree: ast.Module, lines: List[str]) -> None:
+    def __init__(self, tree: ast.Module, lines: list[str]) -> None:
         """
         :param tree: parsed abstract syntax tree of a module
         :param lines: module's lines of code
@@ -273,7 +275,7 @@ class StatementChecker:
         ]
 
     @classmethod
-    def _indexed_nodes(cls, module_tree: ast.Module) -> List[ast.AST]:
+    def _indexed_nodes(cls, module_tree: ast.Module) -> list[ast.AST]:
         """
         Takes an AST tree and turns it into a list of nodes each having
         an index number.
@@ -339,7 +341,7 @@ class StatementChecker:
 
         return False
 
-    def _error_before(self, node: ast.AST, on_behalf_of: ast.AST) -> Optional[Error]:
+    def _error_before(self, node: ast.AST, on_behalf_of: ast.AST) -> Error | None:
         """
         Checks for an error before the statement.
 
@@ -347,7 +349,7 @@ class StatementChecker:
         :param on_behalf_of: original node to be evaluated
         :return: error code
         """
-        previous_node: Optional[ast.AST] = (
+        previous_node: ast.AST | None = (
             self.nodes[node.index - 1] if node.index - 1 >= 0 else None
         )
 
@@ -392,7 +394,7 @@ class StatementChecker:
             type(self),
         )
 
-    def _error_after(self, node: ast.AST, on_behalf_of: ast.AST) -> Optional[Error]:
+    def _error_after(self, node: ast.AST, on_behalf_of: ast.AST) -> Error | None:
         """
         Checks for an error after the statement.
 
@@ -400,7 +402,7 @@ class StatementChecker:
         :param on_behalf_of: original node to be evaluated
         :return: error code
         """
-        next_node: Optional[ast.AST] = (
+        next_node: ast.AST | None = (
             self.nodes[node.index + 1] if node.index + 1 < len(self.nodes) else None
         )
 
@@ -434,8 +436,8 @@ class StatementChecker:
         )
 
     def _node_errors(
-        self, node: ast.AST, on_behalf_of: Optional[ast.AST] = None
-    ) -> List[Error]:
+        self, node: ast.AST, on_behalf_of: ast.AST | None = None
+    ) -> list[Error]:
         """
         Checks whether the node is valid or not.
 
@@ -445,7 +447,7 @@ class StatementChecker:
         """
         output = []
         on_behalf_of = on_behalf_of or node
-        parent_node: Optional[ast.AST] = getattr(node, "parent_node", None)
+        parent_node: ast.AST | None = getattr(node, "parent_node", None)
 
         # Non-statement objects should be dismissed
         if not isinstance(on_behalf_of, tuple(self.statement_map.keys())):
