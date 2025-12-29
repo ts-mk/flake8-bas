@@ -15,15 +15,15 @@ classifiers = [
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Topic :: Software Development :: Quality Assurance',
     'Programming Language :: Python',
-    'Programming Language :: Python :: 3.8',
-    'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8.1,<4"
+python = ">=3.10.0,<4"
 flake8 = ">=3.8.0"
 setuptools = "*"
 
@@ -31,6 +31,7 @@ setuptools = "*"
 black = "24.3.0"
 isort = ">=5.12.0,<6.0.0"
 pre-commit = ">=3.1.0,<4.0.0"
+pycln = ">=2.4.0,<3.0.0"
 
 [tool.poetry.group.test.dependencies]
 pytest = ">=7.0.0,<8.0.0"
@@ -72,3 +73,6 @@ filter_files = true
 line_length = 88
 no_lines_before = ["LOCALFOLDER"]
 profile = "black"
+
+[tool.pycln]
+exclude = "tests/.*"
