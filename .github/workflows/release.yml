@@ -15,7 +15,7 @@ on:
           - major
 
 env:
-  POETRY_VERSION: '1.3.2'
+  POETRY_VERSION: '1.7.1'
   PYTHON_VERSION: '3.14'
   SELF: release.yml
   UTILS: ./.github/workflows/utils.py
@@ -44,7 +44,6 @@ jobs:
       - name: Poetry setup
         run: |
           poetry config virtualenvs.create true
-          poetry config experimental.new-installer false
 
       - name: Package installation
         run: poetry install --sync --no-interaction --without dev,test

@@ -7,7 +7,6 @@ from datetime import datetime
 from pathlib import Path
 from random import SystemRandom
 from string import ascii_uppercase
-from typing import Optional, Union
 from xml.etree import ElementTree
 
 from click import Argument, Context, argument, get_text_stream, group, option
@@ -37,7 +36,7 @@ def main() -> None:
     (TEMP / "GITHUB_STEP_SUMMARY.txt").unlink(missing_ok=True)
 
 
-def stdin(ctx: Context, param: Argument, value: Optional[str] = None) -> Optional[str]:
+def stdin(ctx: Context, param: Argument, value: str | None = None) -> str | None:
     """
     Tries to read value from stdin.
 
@@ -52,7 +51,7 @@ def stdin(ctx: Context, param: Argument, value: Optional[str] = None) -> Optiona
         return value
 
 
-def save_output(name: str, value: Union[str, int, float]) -> None:
+def save_output(name: str, value: str | int | float) -> None:
     """
     Creates a new named output that could be used in other workflow steps.
 
@@ -110,9 +109,7 @@ def version_notes(version: str) -> str:
 @argument("errors", callback=stdin, required=False)
 @option("--directory", required=True, help="Directory path")
 @option("--exclude", required=False, help="Exclude pattern")
-def assert_error_count(
-    errors: str, directory: str, exclude: Optional[str] = None
-) -> None:
+def assert_error_count(errors: str, directory: str, exclude: str | None = None) -> None:
     directory = Path(directory)
     input_error_count = len(errors.strip().split("\n")) if errors.strip() else 0
     expected_error_count = 0
