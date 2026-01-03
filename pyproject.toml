@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "flake8-bas"
-version = "1.0.0"
+version = "1.1.0"
 description = "Flake8 extension that checks for blank lines around (compound) statements."
 authors = ["Tomas Mrozek <tm@nohup.run>"]
 maintainers = ["Tomas Mrozek <tm@nohup.run>"]
