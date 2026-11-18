@@ -14,7 +14,7 @@ concurrency:
 
 env:
   COVERAGE_RESULT: ./coverage.xml
-  POETRY_VERSION: '1.7.1'
+  UV_VERSION: '0.11.21'
   # This Python version must match the one in .pre-commit-config.yaml
   PYTHON_VERSION: '3.14'
   PACKAGE_NAME: 'flake8_bas'
@@ -43,7 +43,7 @@ jobs:
                 format('.github/workflows/{0}', env.SELF),
                 format('{0}/**.py', env.PACKAGE_NAME),
                 'tests/**',
-                'poetry.lock',
+                'uv.lock',
                 '.pre-commit-config.yaml',
                 'setup.cfg'
               )
@@ -80,48 +80,31 @@ jobs:
                 format('.github/workflows/{0}', env.SELF),
                 format('{0}/**.py', env.PACKAGE_NAME),
                 'tests/**',
-                'poetry.lock'
+                'uv.lock'
               )
             }}
-
-      - name: Python setup
-        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Setup of a local directory
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
         run: mkdir ./.local && touch ./.local/result_cache
 
-      - name: Virtualenvs cache
+      - name: uv installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        uses: actions/cache@v4
+        uses: astral-sh/setup-uv@v7
         with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ github.job }}-poetry-${{ env.PYTHON_VERSION }}-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            ${{ github.job }}-poetry-${{ env.PYTHON_VERSION }}-
-
-      - name: Poetry installation
-        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        uses: abatilo/actions-poetry@v2.0.0
-        with:
-          poetry-version: ${{ env.POETRY_VERSION }}
-
-      - name: Poetry setup
-        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        run: |
-          poetry config virtualenvs.create true
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: uv.lock
 
       - name: Package installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        run: poetry install --sync --no-interaction --without dev
+        run: uv sync --locked --no-group dev
 
       - name: Run
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
         run: >-
-          poetry run pytest
+          uv run --no-sync pytest
           --tb=short
           --cov=${{ env.PACKAGE_NAME }}
           --cov-report=xml:${{ env.COVERAGE_RESULT }}
@@ -139,7 +122,7 @@ jobs:
       - name: Add coverage into job's summary
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
         run: >-
-          poetry run ${{ env.UTILS }} coverage-summary
+          uv run --no-sync ${{ env.UTILS }} coverage-summary
           --coverage_file="${GITHUB_WORKSPACE}/${{ env.COVERAGE_RESULT }}"
 
   compatibility:
@@ -182,43 +165,33 @@ jobs:
                 format('.github/workflows/{0}', env.SELF),
                 format('{0}/**.py', env.PACKAGE_NAME),
                 'tests/**',
-                'poetry.lock'
+                'uv.lock'
               )
             }}
-
-      - name: Python setup
-        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
 
       - name: Setup of a local directory
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
         run: mkdir ./.local && touch ./.local/result_cache
 
-      - name: Virtualenvs cache
+      - name: uv installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        uses: actions/cache@v4
+        uses: astral-sh/setup-uv@v7
         with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ github.job }}-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            ${{ github.job }}-poetry-$${{ matrix.python }}-$${{ matrix.flake8 }}-
-
-      - name: Poetry installation
-        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        uses: abatilo/actions-poetry@v2.0.0
-        with:
-          poetry-version: ${{ env.POETRY_VERSION }}
-
-      - name: Poetry setup
-        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
-        run: |
-          poetry config virtualenvs.create true
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ matrix.python }}
+          enable-cache: true
+          cache-dependency-glob: uv.lock
 
       - name: Package installation
         if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
         run: |
-          poetry add --lock "flake8==${{ matrix.flake8 }}"
-          poetry install --sync --no-interaction --without dev,test
-          echo -e "\nFlake8 version: $(poetry run flake8 --version)"
+          uv sync --locked --no-group dev --no-group test
+          if [[ "${{ matrix.flake8 }}" == "*" ]]; then SPEC="flake8"; else SPEC="flake8==${{ matrix.flake8 }}"; fi
+          uv pip install --upgrade "$SPEC"
+          echo -e "\nFlake8 version: $(uv run --no-sync flake8 --version)"
+
+      - name: Run
+        if: (steps.result-cache.outputs.cache-hit != 'true' || github.event_name == 'workflow_dispatch')
+        run: >-
+          uv run --no-sync flake8 --isolated --select=BAS ./tests/fixtures/*/* |
+          uv run --no-sync ${{ env.UTILS }} assert-error-count --directory=./tests/fixtures/invalid

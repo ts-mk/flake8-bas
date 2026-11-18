@@ -14,7 +14,7 @@ concurrency:
 
 env:
   COVERAGE_RESULT: ./coverage.xml
-  POETRY_VERSION: '1.7.1'
+  UV_VERSION: '0.11.21'
   PYTHON_VERSION: '3.14'
   PACKAGE_NAME: 'flake8_bas'
   SELF: coverage.yml
@@ -31,34 +31,20 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v4
 
-      - name: Python setup
-        uses: actions/setup-python@v5
+      - name: uv installation
+        uses: astral-sh/setup-uv@v7
         with:
+          version: ${{ env.UV_VERSION }}
           python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Virtualenvs cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: poetry-${{ env.PYTHON_VERSION }}-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            poetry-${{ env.PYTHON_VERSION }}-
-
-      - name: Poetry installation
-        uses: abatilo/actions-poetry@v2.0.0
-        with:
-          poetry-version: ${{ env.POETRY_VERSION }}
-
-      - name: Poetry setup
-        run: |
-          poetry config virtualenvs.create true
+          enable-cache: true
+          cache-dependency-glob: uv.lock
 
       - name: Package installation
-        run: poetry install --sync --no-interaction --without dev
+        run: uv sync --locked --no-group dev
 
       - name: Run
         run: >-
-          poetry run pytest
+          uv run --no-sync pytest
           --tb=short
           --cov=${{ env.PACKAGE_NAME }}
           --cov-report=xml:${{ env.COVERAGE_RESULT }}
@@ -79,5 +65,5 @@ jobs:
 
       - name: Add coverage into job's summary
         run: >-
-          poetry run ${{ env.UTILS }} coverage-summary
+          uv run --no-sync ${{ env.UTILS }} coverage-summary
           --coverage_file="${GITHUB_WORKSPACE}/${{ env.COVERAGE_RESULT }}"
