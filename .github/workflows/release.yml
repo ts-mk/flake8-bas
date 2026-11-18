@@ -45,24 +45,12 @@ jobs:
       - name: Set new package version
         if: github.event.inputs.version != 'skip'
         run: |
-          PART="${{ github.event.inputs.version }}"
-          VERSION=$(uv version --short)
-
-          # Releasing a pre-release (e.g. 1.2.0a1) finalises it (1.2.0) when the
-          # requested part is already bumped, otherwise the part is bumped.
-          if [[ "$VERSION" =~ [a-z] ]]; then \
-            STABLE=$(uv version --dry-run --short --bump stable); \
-            IFS=. read -r _ MINOR PATCH <<< "$STABLE"; \
-            if [[ "$PART" == "patch" ]] || \
-               [[ "$PART" == "minor" && "$PATCH" == "0" ]] || \
-               [[ "$PART" == "major" && "$MINOR" == "0" && "$PATCH" == "0" ]]; then \
-              uv version --no-sync "$STABLE"; \
-            else \
-              uv version --no-sync --bump "$PART"; \
-            fi; \
-          else \
-            uv version --no-sync --bump "$PART"; \
-          fi
+          NEW_VERSION=$( \
+            uv run --no-sync ${{ env.UTILS }} next-version \
+            --version="$(uv version --short)" \
+            --part="${{ github.event.inputs.version }}" \
+          )
+          uv version --no-sync "$NEW_VERSION"
           echo "NEW version: $(uv version --short)"
 
       - name: Version validation

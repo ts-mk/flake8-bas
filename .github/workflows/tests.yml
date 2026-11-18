@@ -147,6 +147,11 @@ jobs:
             python: '3.14'
           - flake8: '4.0.0'
             python: '3.14'
+          # Pyflakes pinned by these Flake8 versions uses ast.Str, removed in Python 3.14
+          - flake8: '5.0.1'
+            python: '3.14'
+          - flake8: '6.0.0'
+            python: '3.14'
     steps:
       - name: Dump workflow context
         uses: crazy-max/ghaction-dump-context@v1

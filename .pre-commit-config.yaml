@@ -29,7 +29,7 @@ repos:
           - "flake8-blind-except>=0.2.1,<0.3.0"
           - "flake8-builtins>=2.1.0,<3.0.0"
           - "flake8-eradicate>=1.4.0,<2.0.0"
-          - "flake8-import-order>=0.18.2,<0.19.0"
+          - "flake8-import-order>=0.19.2,<0.20.0"
           - "pep8-naming>=0.13.3,<0.14.0"
   - repo: https://github.com/econchick/interrogate
     rev: 1.7.0
