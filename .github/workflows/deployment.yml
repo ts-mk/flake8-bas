@@ -15,7 +15,7 @@ on:
           - premajor
 
 env:
-  POETRY_VERSION: '1.7.1'
+  UV_VERSION: '0.11.21'
   PYTHON_VERSION: '3.14'
   SELF: deployment.yml
 
@@ -36,39 +36,34 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v4
 
-      - name: Python setup
-        uses: actions/setup-python@v5
+      - name: uv installation
+        uses: astral-sh/setup-uv@v7
         with:
+          version: ${{ env.UV_VERSION }}
           python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Poetry installation
-        uses: abatilo/actions-poetry@v2.0.0
-        with:
-          poetry-version: ${{ env.POETRY_VERSION }}
-
-      - name: Poetry setup
-        run: |
-          poetry config virtualenvs.create true
+          enable-cache: true
+          cache-dependency-glob: uv.lock
 
       - name: Version update
         id: version-update
         if: github.event.inputs.version-update != 'skip'
         run: |
-          VERSION=$(poetry version | awk '{print $2}')
+          VERSION=$(uv version --short)
 
           if [[ "$VERSION" =~ [a-z] ]]; then \
-            poetry version prerelease; \
+            uv version --no-sync --bump alpha; \
           else \
-            poetry version ${{ github.event.inputs.version-update }}; \
+            PART="${{ github.event.inputs.version-update }}"; \
+            uv version --no-sync --bump "${PART#pre}" --bump alpha; \
           fi
-          if [[ "$VERSION" == $(poetry version | awk '{print $2}') ]]; then \
+          if [[ "$VERSION" == $(uv version --short) ]]; then \
             echo "ERROR: Updating package version failed."; \
             exit 1; \
           fi
 
       - name: Version validation
         run: |
-          VERSION=$(poetry version | awk '{print $2}')
+          VERSION=$(uv version --short)
 
           if ! [[ "$VERSION" =~ [a-z] ]]; then \
             echo "ERROR: Non pre-release version detected."; \
@@ -77,11 +72,11 @@ jobs:
 
       - name: Run
         id: run
-        run: >-
-          poetry publish
-          --build
-          --username="__token__"
-          --password="${{ secrets.PYPI_TOKEN }}"
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          uv build --no-sources
+          uv publish
 
       - name: Git commit new version
         if: >-
@@ -95,5 +90,5 @@ jobs:
           commit_message: Update of the package version
           commit_user_email: noreply@github.com
           commit_user_name: GA bot
-          file_pattern: pyproject.toml poetry.lock
+          file_pattern: pyproject.toml uv.lock
           skip_checkout: true

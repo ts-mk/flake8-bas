@@ -9,7 +9,15 @@ from random import SystemRandom
 from string import ascii_uppercase
 from xml.etree import ElementTree
 
-from click import Argument, Context, argument, get_text_stream, group, option
+from click import (
+    Argument,
+    Choice,
+    Context,
+    argument,
+    get_text_stream,
+    group,
+    option,
+)
 
 # Temp directory and files in it are used only when running this script locally
 TEMP = Path(__file__).parents[2] / "tmp"
@@ -170,6 +178,37 @@ def write_changelog_release(version: str) -> None:
             f"{keyword}\n\n## [{version}] - {datetime.utcnow().strftime('%Y-%m-%d')}",
         )
     )
+
+
+@main.command(short_help="Outputs the next release version.")
+@option("--version", required=True, help="Current version")
+@option(
+    "--part",
+    required=True,
+    type=Choice(["major", "minor", "patch"]),
+    help="Version part to bump",
+)
+def next_version(version: str, part: str) -> None:
+    """
+    Releasing a pre-release (e.g. 1.2.0a1) finalises it (1.2.0) if the requested
+    part has already been bumped, otherwise the part is bumped (as Poetry does).
+    """
+    if not (match := re.fullmatch(r"(\d+)\.(\d+)\.(\d+)(.*)", version)):
+        raise Exception(f"Unsupported version format: {version}")
+
+    major, minor, patch = (int(n) for n in match.groups()[:3])
+    prerelease = bool(match.groups()[3])
+
+    if part == "major":
+        if not (prerelease and minor == 0 and patch == 0):
+            major, minor, patch = major + 1, 0, 0
+    elif part == "minor":
+        if not (prerelease and patch == 0):
+            minor, patch = minor + 1, 0
+    elif not prerelease:
+        patch += 1
+
+    print(f"{major}.{minor}.{patch}")
 
 
 @main.command(short_help="Sets all release information in the step's output.")

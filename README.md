@@ -2,7 +2,7 @@
 
 ![PyPI](https://img.shields.io/pypi/v/flake8-bas.svg?label=PyPI&logo=PyPI&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python&logoColor=white)
-![Poetry](https://img.shields.io/badge/Poetry-🗸-blue?logo=poetry&logoColor=white)
+![uv](https://img.shields.io/badge/uv-🗸-blue?logo=uv&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-blue?logo=opensourceinitiative&logoColor=white)
 ![codecov](https://codecov.io/gh/ts-mk/flake8-bas/branch/master/graph/badge.svg?token=PI2I083V09)
 ![CI](https://github.com/ts-mk/flake8-bas/actions/workflows/tests.yml/badge.svg)
@@ -46,6 +46,12 @@ line of code within a module** and **not the first/last statement within a compo
 
 ```bash
 pip install flake8-bas
+```
+
+### uv
+
+```bash
+uv add flake8-bas
 ```
 
 ### Poetry
